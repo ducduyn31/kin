@@ -39,10 +39,7 @@ class ChatScreen extends ConsumerWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  contactName,
-                  style: const TextStyle(fontSize: 16),
-                ),
+                Text(contactName, style: const TextStyle(fontSize: 16)),
                 Text(
                   'Online',
                   style: TextStyle(
@@ -83,9 +80,7 @@ class ChatScreen extends ConsumerWidget {
                     child: Text(
                       'No messages yet.\nSend a message to start the conversation!',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: theme.colorScheme.outline,
-                      ),
+                      style: TextStyle(color: theme.colorScheme.outline),
                     ),
                   )
                 : ListView.builder(

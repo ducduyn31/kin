@@ -4,10 +4,7 @@ import '../../domain/message.dart';
 class MessageBubble extends StatelessWidget {
   final Message message;
 
-  const MessageBubble({
-    super.key,
-    required this.message,
-  });
+  const MessageBubble({super.key, required this.message});
 
   String _formatTime(DateTime time) {
     final hour = time.hour.toString().padLeft(2, '0');

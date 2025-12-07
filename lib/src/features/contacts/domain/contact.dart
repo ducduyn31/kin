@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AvailabilityStatus {
-  available,
-  busy,
-  away,
-  offline,
-}
+enum AvailabilityStatus { available, busy, away, offline }
 
 extension AvailabilityStatusX on AvailabilityStatus {
   Color get color {

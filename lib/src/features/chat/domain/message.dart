@@ -14,9 +14,4 @@ class Message {
   });
 }
 
-enum MessageStatus {
-  sending,
-  sent,
-  delivered,
-  read,
-}
+enum MessageStatus { sending, sent, delivered, read }

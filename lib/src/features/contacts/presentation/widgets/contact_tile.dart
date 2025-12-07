@@ -42,10 +42,7 @@ class ContactTile extends StatelessWidget {
               decoration: BoxDecoration(
                 color: contact.status.color,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: theme.colorScheme.surface,
-                  width: 2,
-                ),
+                border: Border.all(color: theme.colorScheme.surface, width: 2),
               ),
             ),
           ),
@@ -66,10 +63,7 @@ class ContactTile extends StatelessWidget {
       ),
       trailing: contact.status == AvailabilityStatus.available
           ? IconButton(
-              icon: Icon(
-                Icons.call,
-                color: theme.colorScheme.primary,
-              ),
+              icon: Icon(Icons.call, color: theme.colorScheme.primary),
               onPressed: onCall,
             )
           : null,

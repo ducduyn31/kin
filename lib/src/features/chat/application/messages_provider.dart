@@ -75,28 +75,42 @@ class MessagesNotifier extends Notifier<MessagesState> {
 
     // Simulate message sent after delay
     Future.delayed(const Duration(seconds: 1), () {
-      state = MessagesState(state.messages.map((m) {
-        if (m.id == newMessage.id) {
-          return Message(
-            id: m.id,
-            content: m.content,
-            timestamp: m.timestamp,
-            isMe: m.isMe,
-            status: MessageStatus.sent,
-          );
+      try {
+        state = MessagesState(
+          state.messages.map((m) {
+            if (m.id == newMessage.id) {
+              return Message(
+                id: m.id,
+                content: m.content,
+                timestamp: m.timestamp,
+                isMe: m.isMe,
+                status: MessageStatus.sent,
+              );
+            }
+            return m;
+          }).toList(),
+        );
+      } on StateError {
+        // Expected: notifier was disposed before delayed update completed
+      } catch (e, stackTrace) {
+        // Unexpected error - log in debug builds
+        if (kDebugMode) {
+          debugPrint('Unexpected error updating message status: $e');
+          debugPrint('$stackTrace');
         }
-        return m;
-      }).toList());
+      }
     });
   }
 }
 
-final messagesNotifierProvider = NotifierProvider<MessagesNotifier, MessagesState>(
-  MessagesNotifier.new,
-);
+final messagesNotifierProvider =
+    NotifierProvider<MessagesNotifier, MessagesState>(MessagesNotifier.new);
 
 // Simple provider to get messages list
-final messagesProvider = Provider.family<List<Message>, String>((ref, conversationId) {
+final messagesProvider = Provider.family<List<Message>, String>((
+  ref,
+  conversationId,
+) {
   final messagesState = ref.watch(messagesNotifierProvider);
   return messagesState.messages;
 });

@@ -28,10 +28,12 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     final theme = Theme.of(context);
 
     // Group contacts by online status
-    final onlineContacts =
-        contacts.where((c) => c.status != AvailabilityStatus.offline).toList();
-    final offlineContacts =
-        contacts.where((c) => c.status == AvailabilityStatus.offline).toList();
+    final onlineContacts = contacts
+        .where((c) => c.status != AvailabilityStatus.offline)
+        .toList();
+    final offlineContacts = contacts
+        .where((c) => c.status == AvailabilityStatus.offline)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -141,18 +143,16 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChatScreen(
-          conversationId: contact.id,
-          contactName: contact.name,
-        ),
+        builder: (_) =>
+            ChatScreen(conversationId: contact.id, contactName: contact.name),
       ),
     );
   }
 
   void _startCall(Contact contact) {
     // TODO: Implement calling
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Calling ${contact.name}...')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Calling ${contact.name}...')));
   }
 }

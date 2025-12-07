@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/ducduyn31/kin/compare/v1.0.0...v1.1.0) (2025-12-07)
+
+
+### Features
+
+* **main:** add core app infrastructure  ([#7](https://github.com/ducduyn31/kin/issues/7)) ([42315d4](https://github.com/ducduyn31/kin/commit/42315d41db0ce15d7afc1c4ca4f68b15ecf60e5f))
+
 ## 1.0.0 (2025-12-07)
 
 

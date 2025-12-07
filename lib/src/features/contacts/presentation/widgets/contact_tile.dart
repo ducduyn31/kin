@@ -13,32 +13,6 @@ class ContactTile extends StatelessWidget {
     this.onCall,
   });
 
-  Color _getStatusColor(AvailabilityStatus status) {
-    switch (status) {
-      case AvailabilityStatus.available:
-        return Colors.green;
-      case AvailabilityStatus.busy:
-        return Colors.red;
-      case AvailabilityStatus.away:
-        return Colors.orange;
-      case AvailabilityStatus.offline:
-        return Colors.grey;
-    }
-  }
-
-  String _getStatusText(AvailabilityStatus status) {
-    switch (status) {
-      case AvailabilityStatus.available:
-        return 'Available';
-      case AvailabilityStatus.busy:
-        return 'Busy';
-      case AvailabilityStatus.away:
-        return 'Away';
-      case AvailabilityStatus.offline:
-        return 'Offline';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -66,7 +40,7 @@ class ContactTile extends StatelessWidget {
               width: 14,
               height: 14,
               decoration: BoxDecoration(
-                color: _getStatusColor(contact.status),
+                color: contact.status.color,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: theme.colorScheme.surface,
@@ -82,7 +56,7 @@ class ContactTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
-        contact.statusMessage ?? _getStatusText(contact.status),
+        contact.statusMessage ?? contact.status.label,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(

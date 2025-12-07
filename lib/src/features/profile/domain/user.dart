@@ -22,7 +22,7 @@ class User {
     String? email,
     String? avatarUrl,
     AvailabilityStatus? status,
-    String? statusMessage,
+    Object? statusMessage = _sentinel,
   }) {
     return User(
       id: id,
@@ -30,7 +30,11 @@ class User {
       email: email ?? this.email,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       status: status ?? this.status,
-      statusMessage: statusMessage ?? this.statusMessage,
+      statusMessage: statusMessage == _sentinel
+          ? this.statusMessage
+          : statusMessage as String?,
     );
   }
 }
+
+const _sentinel = Object();

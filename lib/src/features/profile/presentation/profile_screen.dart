@@ -55,8 +55,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                         child: CircleAvatar(
                           radius: 12,
-                          backgroundColor:
-                              _getStatusColor(user.status),
+                          backgroundColor: user.status.color,
                           child: Icon(
                             Icons.check,
                             size: 12,
@@ -189,18 +188,6 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Color _getStatusColor(AvailabilityStatus status) {
-    switch (status) {
-      case AvailabilityStatus.available:
-        return Colors.green;
-      case AvailabilityStatus.busy:
-        return Colors.red;
-      case AvailabilityStatus.away:
-        return Colors.orange;
-      case AvailabilityStatus.offline:
-        return Colors.grey;
-    }
-  }
 }
 
 class _StatusOption extends StatelessWidget {
@@ -214,30 +201,11 @@ class _StatusOption extends StatelessWidget {
     required this.onTap,
   });
 
-  Color _getStatusColor(AvailabilityStatus status) {
-    switch (status) {
-      case AvailabilityStatus.available:
-        return Colors.green;
-      case AvailabilityStatus.busy:
-        return Colors.red;
-      case AvailabilityStatus.away:
-        return Colors.orange;
-      case AvailabilityStatus.offline:
-        return Colors.grey;
-    }
-  }
-
   String _getStatusText(AvailabilityStatus status) {
-    switch (status) {
-      case AvailabilityStatus.available:
-        return 'Available';
-      case AvailabilityStatus.busy:
-        return 'Busy';
-      case AvailabilityStatus.away:
-        return 'Away';
-      case AvailabilityStatus.offline:
-        return 'Appear Offline';
+    if (status == AvailabilityStatus.offline) {
+      return 'Appear Offline';
     }
+    return status.label;
   }
 
   @override
@@ -251,7 +219,7 @@ class _StatusOption extends StatelessWidget {
         width: 12,
         height: 12,
         decoration: BoxDecoration(
-          color: _getStatusColor(status),
+          color: status.color,
           shape: BoxShape.circle,
         ),
       ),

@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/message.dart';
 
+@immutable
 class MessagesState {
   final List<Message> messages;
 
-  MessagesState(this.messages);
+  const MessagesState(this.messages);
 }
 
 class MessagesNotifier extends Notifier<MessagesState> {

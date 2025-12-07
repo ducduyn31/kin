@@ -24,7 +24,7 @@ Kin uses a **feature-first** project structure based on [Code with Andrea's Flut
 
 ### Project Structure
 
-```
+```text
 lib/
 ├── main.dart                           # App entry point
 ├── src/

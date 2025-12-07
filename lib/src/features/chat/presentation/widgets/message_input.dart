@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MessageInput extends StatefulWidget {
-  final Function(String) onSend;
+  final ValueChanged<String> onSend;
 
   const MessageInput({
     super.key,
@@ -91,14 +91,16 @@ class _MessageInputState extends State<MessageInput> {
               ),
             ),
             const SizedBox(width: 8),
-            AnimatedContainer(
+            AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
               child: _hasText
                   ? IconButton.filled(
+                      key: const ValueKey('send'),
                       icon: const Icon(Icons.send),
                       onPressed: _sendMessage,
                     )
                   : IconButton(
+                      key: const ValueKey('mic'),
                       icon: const Icon(Icons.mic),
                       onPressed: () {
                         // TODO: Implement voice message

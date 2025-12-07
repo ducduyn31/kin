@@ -90,8 +90,14 @@ class MessagesNotifier extends Notifier<MessagesState> {
             return m;
           }).toList(),
         );
-      } catch (_) {
-        // Provider may have been disposed
+      } on StateError {
+        // Expected: notifier was disposed before delayed update completed
+      } catch (e, stackTrace) {
+        // Unexpected error - log in debug builds
+        if (kDebugMode) {
+          debugPrint('Unexpected error updating message status: $e');
+          debugPrint('$stackTrace');
+        }
       }
     });
   }

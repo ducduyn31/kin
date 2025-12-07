@@ -18,6 +18,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  static const Widget _loadingIndicator = SizedBox(
+    height: 20,
+    width: 20,
+    child: CircularProgressIndicator(strokeWidth: 2),
+  );
+
   final _codeController = TextEditingController();
 
   bool _isCodeSent = false;
@@ -168,11 +174,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           onPressed: authState.isLoading || !_isPhoneValid ? null : _sendCode,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: authState.isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? _loadingIndicator
               : const Text('Send Verification Code'),
         ),
       ],
@@ -212,11 +214,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           onPressed: authState.isLoading ? null : _verifyCode,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: authState.isLoading
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
+              ? _loadingIndicator
               : const Text('Verify Code'),
         ),
         const SizedBox(height: 16),

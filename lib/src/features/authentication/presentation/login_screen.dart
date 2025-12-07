@@ -208,7 +208,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             FilteringTextInputFormatter.digitsOnly,
             LengthLimitingTextInputFormatter(6),
           ],
-          onFieldSubmitted: (_) => _verifyCode(),
+          onFieldSubmitted: (_) {
+            if (!authState.isLoading) _verifyCode();
+          },
         ),
         const SizedBox(height: 16),
         FilledButton(
@@ -228,14 +230,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             const SizedBox(width: 16),
             TextButton(
-              onPressed: authState.isLoading
-                  ? null
-                  : () {
-                      setState(() {
-                        _isCodeSent = false;
-                        _codeController.clear();
-                      });
-                    },
+              onPressed: authState.isLoading ? null : _resetPhoneInput,
               child: const Text('Change Number'),
             ),
           ],
@@ -256,6 +251,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     return 'US';
+  }
+
+  void _resetPhoneInput() {
+    setState(() {
+      _isCodeSent = false;
+      _codeController.clear();
+      _completePhoneNumber = null;
+      _displayPhoneNumber = null;
+      _isPhoneValid = false;
+    });
   }
 
   Future<void> _sendCode() async {

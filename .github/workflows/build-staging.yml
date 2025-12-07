@@ -74,11 +74,12 @@ jobs:
           APP_SCHEME: ${{ vars.APP_SCHEME }}
           API_BASE_URL: ${{ vars.API_BASE_URL }}
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-staging-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+      # TODO: Enable artifact upload once build artifacts are needed
+      # - name: Upload APK
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: app-staging-apk
+      #     path: build/app/outputs/flutter-apk/app-release.apk
 
   build-ios:
     name: Build iOS
@@ -109,8 +110,9 @@ jobs:
           APP_SCHEME: ${{ vars.APP_SCHEME }}
           API_BASE_URL: ${{ vars.API_BASE_URL }}
 
-      - name: Upload iOS build
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-staging-ios
-          path: build/ios/iphoneos/Runner.app
+      # TODO: Enable artifact upload once build artifacts are needed
+      # - name: Upload iOS build
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: app-staging-ios
+      #     path: build/ios/iphoneos/Runner.app

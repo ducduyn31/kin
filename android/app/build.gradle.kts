@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -74,10 +72,15 @@ android {
         versionName = flutter.versionName
 
         // Auth0 configuration - loaded from env vars or .env file
-        val auth0Domain = envProperties["AUTH0_DOMAIN"] ?: ""
+        val auth0Domain = envProperties["AUTH0_DOMAIN"]
         val auth0Scheme = envProperties["APP_SCHEME"] ?: applicationId!!
 
-        manifestPlaceholders["auth0Domain"] = auth0Domain
+        if (auth0Domain.isNullOrBlank()) {
+            logger.warn("WARNING: AUTH0_DOMAIN is not set. Auth0 callbacks will not work.")
+            logger.warn("Set AUTH0_DOMAIN in .env file or as an environment variable.")
+        }
+
+        manifestPlaceholders["auth0Domain"] = auth0Domain ?: ""
         manifestPlaceholders["auth0Scheme"] = auth0Scheme
     }
 

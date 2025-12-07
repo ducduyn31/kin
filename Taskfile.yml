@@ -77,7 +77,15 @@ tasks:
       - task: generate
       - '{{.FLUTTER}} build ios --release'
 
-  # CI builds (creates .env from env vars, then generates)
+  # CI tasks (creates .env from env vars)
+  ci:generate:
+    desc: CI - Generate code with env setup
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: staging
+      - task: generate
+
   ci:build:apk:staging:
     desc: CI - Build APK for staging
     cmds:

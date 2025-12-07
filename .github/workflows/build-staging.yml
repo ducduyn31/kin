@@ -31,9 +31,7 @@ jobs:
         run: flutter pub get
 
       - name: Generate code
-        run: |
-          task ci:create-env
-          task generate
+        run: task ci:generate
         env:
           AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
           AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}

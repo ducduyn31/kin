@@ -105,7 +105,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   _SocialLoginButton(
                     onPressed: authState.isLoading
                         ? null
-                        : () => ref.read(authProvider.notifier).loginWithApple(),
+                        : () =>
+                              ref.read(authProvider.notifier).loginWithApple(),
                     icon: Icons.apple_rounded,
                     label: 'Continue with Apple',
                     backgroundColor: Colors.black,
@@ -187,9 +188,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Text(
           'Enter the verification code sent to $_displayPhoneNumber',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
@@ -280,9 +281,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() {
         _isCodeSent = true;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code sent!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Verification code sent!')));
     }
   }
 
@@ -311,10 +312,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (_completePhoneNumber == null) return;
 
-    await ref.read(authProvider.notifier).loginWithPhoneCode(
-      phoneNumber: _completePhoneNumber!,
-      verificationCode: code,
-    );
+    await ref
+        .read(authProvider.notifier)
+        .loginWithPhoneCode(
+          phoneNumber: _completePhoneNumber!,
+          verificationCode: code,
+        );
   }
 
   bool get _isAppleDevice {

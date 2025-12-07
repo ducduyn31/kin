@@ -51,6 +51,7 @@ app.*.map.json
 **/macos/.symlinks/
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
+**/ios/Runner/Auth0.plist
 
 # Environment (keep .env.example)
 .env

@@ -1,0 +1,103 @@
+# Minimum iOS version required by auth0_flutter
+platform :ios, '14.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+# Generate Auth0.plist from .env file
+def generate_auth0_plist
+  require 'fileutils'
+
+  project_root = File.expand_path('..', __dir__)
+  plist_path = File.join(__dir__, 'Runner', 'Auth0.plist')
+
+  # Load environment variables from .env files
+  env_vars = {}
+  ['.env.local', '.env'].each do |env_file|
+    env_path = File.join(project_root, env_file)
+    if File.exist?(env_path)
+      File.readlines(env_path).each do |line|
+        line = line.strip
+        next if line.empty? || line.start_with?('#')
+        if line.include?('=')
+          key, value = line.split('=', 2)
+          env_vars[key.strip] ||= value.strip
+        end
+      end
+    end
+  end
+
+  # System env vars take precedence
+  auth0_domain = ENV['AUTH0_DOMAIN'] || env_vars['AUTH0_DOMAIN']
+  auth0_client_id = ENV['AUTH0_CLIENT_ID'] || env_vars['AUTH0_CLIENT_ID']
+
+  if auth0_domain.nil? || auth0_domain.empty?
+    Pod::UI.warn "AUTH0_DOMAIN not set - Auth0.plist will not be generated"
+    return
+  end
+
+  if auth0_client_id.nil? || auth0_client_id.empty?
+    Pod::UI.warn "AUTH0_CLIENT_ID not set - Auth0.plist will not be generated"
+    return
+  end
+
+  # Generate plist
+  plist_content = <<~PLIST
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+        <key>Domain</key>
+        <string>#{auth0_domain}</string>
+        <key>ClientId</key>
+        <string>#{auth0_client_id}</string>
+    </dict>
+    </plist>
+  PLIST
+
+  File.write(plist_path, plist_content)
+  Pod::UI.puts "Generated Auth0.plist with domain: #{auth0_domain}"
+end
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT\=(.*)/)
+    return matches[1].strip if matches
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+
+flutter_ios_podfile_setup
+
+# Generate Auth0.plist before installing pods
+pre_install do |installer|
+  generate_auth0_plist
+end
+
+target 'Runner' do
+  use_frameworks!
+
+  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+  end
+end

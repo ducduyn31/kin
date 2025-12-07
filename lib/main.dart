@@ -1,14 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'src/config/env.dart';
 import 'src/constants/app_theme.dart';
+import 'src/features/authentication/presentation/auth_wrapper.dart';
 import 'src/routing/app_router.dart';
 
 void main() {
-  runApp(
-    const ProviderScope(
-      child: KinApp(),
-    ),
-  );
+  if (kDebugMode && Env.enableDebugLogging) {
+    debugPrint('Environment: ${Env.environment}');
+  }
+
+  runApp(const ProviderScope(child: KinApp()));
 }
 
 class KinApp extends StatelessWidget {
@@ -22,8 +25,9 @@ class KinApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      initialRoute: AppRouter.conversations,
-      onGenerateRoute: AppRouter.onGenerateRoute,
+      home: AuthWrapper(
+        child: Navigator(onGenerateRoute: AppRouter.onGenerateRoute),
+      ),
     );
   }
 }

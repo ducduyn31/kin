@@ -1,9 +1,46 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+fun loadEnv(): Map<String, String> {
+    val properties = mutableMapOf<String, String>()
+
+    val envFiles = listOf(
+        rootProject.file("../.env.local"),
+        rootProject.file("../.env")
+    )
+
+    for (envFile in envFiles) {
+        if (envFile.exists()) {
+            envFile.inputStream().use { stream ->
+                stream.bufferedReader().forEachLine { line ->
+                    if (line.isNotBlank() && !line.startsWith("#") && line.contains("=")) {
+                        val (key, value) = line.split("=", limit = 2)
+                        properties[key.trim()] = value.trim()
+                    }
+                }
+            }
+            break
+        }
+    }
+
+    listOf("AUTH0_DOMAIN", "APP_SCHEME").forEach { key ->
+        System.getenv(key)?.let { value ->
+            if (value.isNotBlank()) {
+                properties[key] = value
+            }
+        }
+    }
+
+    return properties
+}
+
+val envProperties = loadEnv()
 
 android {
     namespace = "com.kin.kin"
@@ -20,14 +57,18 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.kin.kin"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // Auth0 configuration - loaded from env vars or .env file
+        val auth0Domain = envProperties["AUTH0_DOMAIN"] ?: ""
+        val auth0Scheme = envProperties["APP_SCHEME"] ?: applicationId!!
+
+        manifestPlaceholders["auth0Domain"] = auth0Domain
+        manifestPlaceholders["auth0Scheme"] = auth0Scheme
     }
 
     buildTypes {

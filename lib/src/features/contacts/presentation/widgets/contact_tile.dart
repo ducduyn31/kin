@@ -51,7 +51,7 @@ class ContactTile extends StatelessWidget {
             radius: 24,
             backgroundColor: theme.colorScheme.primaryContainer,
             child: Text(
-              contact.name[0].toUpperCase(),
+              contact.name.isNotEmpty ? contact.name[0].toUpperCase() : '?',
               style: TextStyle(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,

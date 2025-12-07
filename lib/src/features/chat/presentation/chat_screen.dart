@@ -28,7 +28,7 @@ class ChatScreen extends ConsumerWidget {
               radius: 18,
               backgroundColor: theme.colorScheme.primaryContainer,
               child: Text(
-                contactName[0].toUpperCase(),
+                contactName.isNotEmpty ? contactName[0].toUpperCase() : '?',
                 style: TextStyle(
                   color: theme.colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.bold,

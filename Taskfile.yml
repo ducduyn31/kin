@@ -1,0 +1,185 @@
+version: '3'
+
+vars:
+  FLUTTER: flutter
+  DART: dart
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  setup:
+    desc: Install dependencies and create local env file
+    cmds:
+      - '{{.FLUTTER}} pub get'
+      - cmd: cp .env.example .env.local
+        ignore_error: true
+      - echo "Created .env.local - please fill in your Auth0 credentials"
+    status:
+      - test -f .env.local
+
+  # Code generation
+  generate:
+    desc: Run build_runner to generate code
+    cmds:
+      - '{{.DART}} run build_runner build --delete-conflicting-outputs'
+
+  # Development
+  run:
+    desc: Run app with local environment
+    deps: [check-env-local]
+    cmds:
+      - cp .env.local .env
+      - task: generate
+      - '{{.FLUTTER}} run'
+
+  # Build - Staging
+  build:apk:staging:
+    desc: Build APK for staging
+    deps: [check-env-staging]
+    cmds:
+      - cp .env.staging .env
+      - task: generate
+      - '{{.FLUTTER}} build apk'
+
+  build:ios:staging:
+    desc: Build iOS for staging (no codesign)
+    deps: [check-env-staging]
+    cmds:
+      - cp .env.staging .env
+      - task: generate
+      - '{{.FLUTTER}} build ios --no-codesign'
+
+  # Build - Production
+  build:apk:prod:
+    desc: Build APK for production
+    deps: [check-env-prod]
+    cmds:
+      - cp .env.production .env
+      - task: generate
+      - '{{.FLUTTER}} build apk --release'
+
+  build:appbundle:prod:
+    desc: Build App Bundle for production (Play Store)
+    deps: [check-env-prod]
+    cmds:
+      - cp .env.production .env
+      - task: generate
+      - '{{.FLUTTER}} build appbundle --release'
+
+  build:ios:prod:
+    desc: Build iOS for production
+    deps: [check-env-prod]
+    cmds:
+      - cp .env.production .env
+      - task: generate
+      - '{{.FLUTTER}} build ios --release'
+
+  # CI builds (creates .env from env vars, then generates)
+  ci:build:apk:staging:
+    desc: CI - Build APK for staging
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: staging
+      - task: generate
+      - '{{.FLUTTER}} build apk'
+
+  ci:build:ios:staging:
+    desc: CI - Build iOS for staging
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: staging
+      - task: generate
+      - '{{.FLUTTER}} build ios --no-codesign'
+
+  ci:build:apk:prod:
+    desc: CI - Build APK for production
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: production
+      - task: generate
+      - '{{.FLUTTER}} build apk --release'
+
+  ci:build:appbundle:prod:
+    desc: CI - Build App Bundle for production (Play Store)
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: production
+      - task: generate
+      - '{{.FLUTTER}} build appbundle --release'
+
+  ci:build:ios:prod:
+    desc: CI - Build iOS for production
+    cmds:
+      - task: ci:create-env
+        vars:
+          ENVIRONMENT: production
+      - task: generate
+      - '{{.FLUTTER}} build ios --release'
+
+  ci:create-env:
+    internal: true
+    cmds:
+      - |
+        cat > .env << EOF
+        ENVIRONMENT={{.ENVIRONMENT}}
+        AUTH0_DOMAIN=${AUTH0_DOMAIN}
+        AUTH0_CLIENT_ID=${AUTH0_CLIENT_ID}
+        AUTH0_AUDIENCE=${AUTH0_AUDIENCE:-}
+        APP_SCHEME=${APP_SCHEME}
+        API_BASE_URL=${API_BASE_URL:-}
+        ENABLE_DEBUG_LOGGING=false
+        EOF
+
+  # Utilities
+  clean:
+    desc: Clean build artifacts
+    cmds:
+      - '{{.FLUTTER}} clean'
+      - rm -rf build/
+      - rm -f .env
+
+  analyze:
+    desc: Run Dart analyzer
+    cmds:
+      - '{{.DART}} analyze lib/'
+
+  test:
+    desc: Run tests
+    cmds:
+      - '{{.FLUTTER}} test'
+
+  format:
+    desc: Format Dart code
+    cmds:
+      - '{{.DART}} format lib/'
+
+  format:check:
+    desc: Check Dart code formatting
+    cmds:
+      - '{{.DART}} format --set-exit-if-changed lib/'
+
+  # Internal checks
+  check-env-local:
+    internal: true
+    preconditions:
+      - sh: test -f .env.local
+        msg: ".env.local not found. Run 'task setup' first."
+
+  check-env-staging:
+    internal: true
+    preconditions:
+      - sh: test -f .env.staging
+        msg: ".env.staging not found. Copy from .env.example"
+
+  check-env-prod:
+    internal: true
+    preconditions:
+      - sh: test -f .env.production
+        msg: ".env.production not found. Copy from .env.example"

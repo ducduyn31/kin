@@ -16,11 +16,22 @@ dependencies:
   # State Management
   flutter_riverpod: 3.0.3
 
+  # Authentication
+  auth0_flutter: 1.14.0
+  flutter_secure_storage: 9.2.4
+
+  # Environment Configuration
+  envied: 1.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: 6.0.0
+
+  # Code Generation
+  build_runner: 2.4.15
+  envied_generator: 1.1.1
 
 flutter:
   uses-material-design: true

@@ -52,7 +52,11 @@ app.*.map.json
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
 
-# Environment
+# Environment (keep .env.example)
 .env
-.env.*
-*.env
+.env.local
+.env.staging
+.env.production
+
+# Generated code
+*.g.dart

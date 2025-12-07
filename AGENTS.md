@@ -7,39 +7,67 @@ This document provides technical context for AI agents and developers working on
 - **Framework:** Flutter
 - **Language:** Dart
 - **State Management:** Riverpod
-- **Architecture:** Dart Board (feature-based)
+- **Architecture:** Feature-First (layers inside features)
+- **Design:** Material 3
 - **Backend:** [TBD]
 
 ## Architecture Overview
 
-Kin uses [Dart Board](https://github.com/ahammer/dart_board), a feature-based architecture framework for Flutter. This enables modular, self-contained features that integrate through configuration.
+Kin uses a **feature-first** project structure based on [Code with Andrea's Flutter Project Structure](https://codewithandrea.com/articles/flutter-project-structure/). Features are organized by functional requirements, not by UI screens.
 
-### Core Concepts
+### Core Principles
 
-**Features** are standalone modules that encapsulate functionality. Each feature can expose:
-- **Routes** - Named paths and screens
-- **Decorations** - UI/non-UI widgets injected at app or page level
-- **Method Calls** - Decoupled inter-feature communication
+1. **Features represent functionality** - A feature is a functional requirement that helps the user complete a task (e.g., authentication, messaging, contacts), not individual screens
+2. **Layers inside features** - Each feature contains its own presentation, application, domain, and data layers
+3. **Minimal shared code** - Only truly reusable code goes in top-level folders; keep these lean
+4. **Domain-driven boundaries** - Start from domain models to establish clear component boundaries
 
 ### Project Structure
 
-```
+```text
 lib/
-├── main.dart                    # App entry point with DartBoard initialization
-├── features/                    # Feature modules
-│   ├── home/                    # Home feature
-│   │   ├── home_feature.dart    # Feature definition (routes, decorations)
-│   │   └── home_screen.dart     # UI screen
-│   ├── availability/            # Availability status feature [TBD]
-│   └── calling/                 # Voice/video calling feature [TBD]
+├── main.dart                           # App entry point
+├── src/
+│   ├── features/                       # Feature modules
+│   │   ├── feature_name/
+│   │   │   ├── presentation/           # UI widgets, screens, controllers
+│   │   │   ├── application/            # Services, providers, business logic
+│   │   │   ├── domain/                 # Models, entities, business rules
+│   │   │   └── data/                   # Repositories, data sources, DTOs
+│   │   │
+│   │   ├── conversations/              # Chat list feature
+│   │   ├── chat/                       # Individual chat feature
+│   │   ├── contacts/                   # Contacts/friends feature
+│   │   ├── profile/                    # User profile feature
+│   │   ├── availability/               # Availability status feature [TBD]
+│   │   └── calling/                    # Voice/video calling feature [TBD]
+│   │
+│   ├── common_widgets/                 # Shared UI components
+│   ├── constants/                      # App-wide constants, theme
+│   ├── routing/                        # Navigation/routing
+│   ├── localization/                   # i18n (when needed)
+│   ├── utils/                          # Utility functions
+│   └── exceptions/                     # Custom exceptions
 ```
+
+### Feature Layers
+
+Each feature folder should contain these layers as needed:
+
+| Layer | Purpose | Contents |
+|-------|---------|----------|
+| **presentation/** | UI and state | Screens, widgets, controllers |
+| **application/** | Business logic | Services, providers, use cases |
+| **domain/** | Core models | Entities, value objects, business rules |
+| **data/** | Data access | Repositories, data sources, DTOs |
 
 ### Adding a New Feature
 
-1. Create a directory under `lib/features/`
-2. Create a feature class extending `IFeature`
-3. Define routes, decorations, and dependencies
-4. Register the feature in `main.dart`
+1. Create a directory under `lib/src/features/`
+2. Add layer subdirectories as needed (presentation, application, domain, data)
+3. Start with domain models to define the feature's data
+4. Build out from domain → application → presentation
+5. Add routes in `lib/src/routing/app_router.dart`
 
 ## Key Concepts
 
@@ -57,9 +85,11 @@ Voice and video calling functionality for connecting with friends and family.
 ## Code Conventions
 
 - Features should be self-contained and loosely coupled
-- Use Riverpod for state management within features
+- Use Riverpod for state management (NotifierProvider pattern)
+- Use Material 3 theming (`useMaterial3: true`)
 - Follow Dart/Flutter naming conventions
-- Keep features small and focused
+- Keep features small and focused on a single functional area
+- Mirror `lib/src/` structure in `test/` folder
 
 ## Development Notes
 

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":dependencyDashboard"
+  ],
+  "ignorePaths": [
+    "android/settings.gradle.kts"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security"]
+  },
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchManagers": ["pub"],
+      "groupName": "Flutter dependencies",
+      "groupSlug": "flutter-deps"
+    },
+    {
+      "matchPackageNames": ["flutter"],
+      "matchManagers": ["pub"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["flutter_test"],
+      "matchManagers": ["pub"],
+      "enabled": false
+    }
+  ],
+  "schedule": ["before 9am on monday"]
+}

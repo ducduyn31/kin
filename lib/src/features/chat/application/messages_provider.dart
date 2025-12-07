@@ -75,20 +75,24 @@ class MessagesNotifier extends Notifier<MessagesState> {
 
     // Simulate message sent after delay
     Future.delayed(const Duration(seconds: 1), () {
-      state = MessagesState(
-        state.messages.map((m) {
-          if (m.id == newMessage.id) {
-            return Message(
-              id: m.id,
-              content: m.content,
-              timestamp: m.timestamp,
-              isMe: m.isMe,
-              status: MessageStatus.sent,
-            );
-          }
-          return m;
-        }).toList(),
-      );
+      try {
+        state = MessagesState(
+          state.messages.map((m) {
+            if (m.id == newMessage.id) {
+              return Message(
+                id: m.id,
+                content: m.content,
+                timestamp: m.timestamp,
+                isMe: m.isMe,
+                status: MessageStatus.sent,
+              );
+            }
+            return m;
+          }).toList(),
+        );
+      } catch (_) {
+        // Provider may have been disposed
+      }
     });
   }
 }

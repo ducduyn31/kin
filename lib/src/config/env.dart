@@ -22,8 +22,9 @@ abstract class Env {
   @EnviedField(varName: 'API_BASE_URL', defaultValue: '')
   static final String apiBaseUrl = _Env.apiBaseUrl;
 
-  @EnviedField(varName: 'ENABLE_DEBUG_LOGGING', defaultValue: 'true')
+  @EnviedField(varName: 'ENABLE_DEBUG_LOGGING', defaultValue: 'false')
   static final String _enableDebugLogging = _Env._enableDebugLogging;
 
-  static bool get enableDebugLogging => _enableDebugLogging == 'true';
+  static bool get enableDebugLogging =>
+      _enableDebugLogging.toLowerCase() == 'true';
 }

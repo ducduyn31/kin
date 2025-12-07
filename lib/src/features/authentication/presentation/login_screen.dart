@@ -151,18 +151,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           disableLengthCheck: false,
           invalidNumberMessage: 'Invalid phone number',
           onChanged: (PhoneNumber phone) {
-            _completePhoneNumber = phone.completeNumber;
-            _displayPhoneNumber = phone.completeNumber;
-            _isPhoneValid = phone.isValidNumber();
+            setState(() {
+              _completePhoneNumber = phone.completeNumber;
+              _displayPhoneNumber = phone.completeNumber;
+              _isPhoneValid = phone.isValidNumber();
+            });
           },
           onCountryChanged: (country) {
-            // Reset validation when country changes
-            _isPhoneValid = false;
+            setState(() {
+              _isPhoneValid = false;
+            });
           },
         ),
         const SizedBox(height: 16),
         FilledButton(
-          onPressed: authState.isLoading ? null : _sendCode,
+          onPressed: authState.isLoading || !_isPhoneValid ? null : _sendCode,
           style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
           child: authState.isLoading
               ? const SizedBox(

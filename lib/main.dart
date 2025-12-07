@@ -25,9 +25,9 @@ class KinApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: AuthWrapper(
-        child: Navigator(onGenerateRoute: AppRouter.onGenerateRoute),
-      ),
+      builder: (context, child) => AuthWrapper(child: child!),
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      initialRoute: '/',
     );
   }
 }

@@ -39,7 +39,9 @@ class ConversationTile extends StatelessWidget {
             radius: 28,
             backgroundColor: theme.colorScheme.primaryContainer,
             child: Text(
-              conversation.contactName.isNotEmpty ? conversation.contactName[0].toUpperCase() : '?',
+              conversation.contactName.isNotEmpty
+                  ? conversation.contactName[0].toUpperCase()
+                  : '?',
               style: TextStyle(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,

@@ -37,25 +37,23 @@ class ConversationsScreen extends ConsumerWidget {
                   Text(
                     'No conversations yet',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Start a chat with a friend!',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.outline,
-                        ),
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                 ],
               ),
             )
           : ListView.separated(
               itemCount: conversations.length,
-              separatorBuilder: (context, index) => const Divider(
-                height: 1,
-                indent: 72,
-              ),
+              separatorBuilder: (context, index) =>
+                  const Divider(height: 1, indent: 72),
               itemBuilder: (context, index) {
                 final conversation = conversations[index];
                 return ConversationTile(

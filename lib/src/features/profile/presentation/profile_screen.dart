@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../application/user_provider.dart';
+import '../../authentication/application/auth_provider.dart';
 import '../../contacts/domain/contact.dart';
 
 class ProfileScreen extends ConsumerWidget {
@@ -76,9 +77,7 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   user.email,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -176,9 +175,7 @@ class ProfileScreen extends ConsumerWidget {
                 title: 'Log Out',
                 iconColor: theme.colorScheme.error,
                 textColor: theme.colorScheme.error,
-                onTap: () {
-                  // TODO: Implement logout
-                },
+                onTap: () => _showLogoutDialog(context, ref),
               ),
             ),
           ),
@@ -188,6 +185,28 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log Out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(authProvider.notifier).logout();
+            },
+            child: const Text('Log Out'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _StatusOption extends StatelessWidget {
@@ -218,10 +237,7 @@ class _StatusOption extends StatelessWidget {
       leading: Container(
         width: 12,
         height: 12,
-        decoration: BoxDecoration(
-          color: status.color,
-          shape: BoxShape.circle,
-        ),
+        decoration: BoxDecoration(color: status.color, shape: BoxShape.circle),
       ),
       title: Text(_getStatusText(status)),
       trailing: isSelected
@@ -251,10 +267,7 @@ class _MenuTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: Icon(icon, color: iconColor),
-      title: Text(
-        title,
-        style: TextStyle(color: textColor),
-      ),
+      title: Text(title, style: TextStyle(color: textColor)),
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );

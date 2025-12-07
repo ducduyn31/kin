@@ -2,9 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/user.dart';
 import '../../contacts/domain/contact.dart';
 
-final userProvider = NotifierProvider<UserNotifier, User>(
-  UserNotifier.new,
-);
+final userProvider = NotifierProvider<UserNotifier, User>(UserNotifier.new);
 
 class UserNotifier extends Notifier<User> {
   @override

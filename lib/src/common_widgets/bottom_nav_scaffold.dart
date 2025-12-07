@@ -6,10 +6,7 @@ import '../features/profile/presentation/profile_screen.dart';
 class BottomNavScaffold extends StatefulWidget {
   final int initialIndex;
 
-  const BottomNavScaffold({
-    super.key,
-    this.initialIndex = 0,
-  });
+  const BottomNavScaffold({super.key, this.initialIndex = 0});
 
   @override
   State<BottomNavScaffold> createState() => _BottomNavScaffoldState();
@@ -33,10 +30,7 @@ class _BottomNavScaffoldState extends State<BottomNavScaffold> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) {

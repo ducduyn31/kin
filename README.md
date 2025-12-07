@@ -23,6 +23,7 @@ Ever wanted to call someone but weren't sure if it was a good time? Kin solves t
 
 - Flutter SDK (3.0.0 or higher)
 - Dart SDK (3.0.0 or higher)
+- [Task](https://taskfile.dev/) - Task runner
 - Xcode (for iOS development)
 - Android Studio (for Android development)
 
@@ -34,27 +35,55 @@ Ever wanted to call someone but weren't sure if it was a good time? Kin solves t
    cd kin
    ```
 
-2. Install dependencies:
+2. Set up the project:
    ```bash
-   flutter pub get
+   task setup
+   ```
+   This installs dependencies and creates `.env.local` from the example template.
+
+3. Configure your environment:
+
+   Edit `.env.local` with your Auth0 credentials (see `.env.example` for details).
+
+4. Run the app:
+   ```bash
+   task run
    ```
 
-3. Run the app:
-   ```bash
-   flutter run
-   ```
+### Available Tasks
+
+Run `task --list` to see all available tasks. Common ones:
+
+| Task | Description |
+|------|-------------|
+| `task setup` | Install dependencies and create local env file |
+| `task run` | Run app with local environment |
+| `task generate` | Run build_runner to generate code |
+| `task test` | Run tests |
+| `task analyze` | Run Dart analyzer |
+| `task format` | Format Dart code |
+| `task clean` | Clean build artifacts |
 
 ### Building for Production
 
-**Android:**
+**Android APK:**
 ```bash
-flutter build apk --release
+task build:apk:prod
+```
+
+**Android App Bundle (Play Store):**
+```bash
+task build:appbundle:prod
 ```
 
 **iOS:**
 ```bash
-flutter build ios --release
+task build:ios:prod
 ```
+
+For staging builds, use `task build:apk:staging` or `task build:ios:staging`.
+
+Note: Production builds require `.env.production` and staging builds require `.env.staging`. Copy from `.env.example` and configure accordingly.
 
 ## Contributing
 

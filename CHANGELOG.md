@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ducduyn31/kin/compare/v1.1.0...v1.2.0) (2025-12-07)
+
+
+### Features
+
+* **auth:** add auth0 and login screen ([#9](https://github.com/ducduyn31/kin/issues/9)) ([9007a58](https://github.com/ducduyn31/kin/commit/9007a580a72a3e3aa8311a56c7bd2ac71f4b3e79))
+
 ## [1.1.0](https://github.com/ducduyn31/kin/compare/v1.0.0...v1.1.0) (2025-12-07)
 
 

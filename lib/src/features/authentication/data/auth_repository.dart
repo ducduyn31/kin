@@ -2,6 +2,7 @@ import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../../../utils/string_utils.dart';
 import '../domain/auth_user.dart';
 import 'auth0_config.dart';
 
@@ -51,15 +52,18 @@ class AuthRepository {
 
   /// Start passwordless login with phone number (sends SMS code)
   Future<void> startPasswordlessWithPhone({required String phoneNumber}) async {
-    debugPrint('[Auth] Starting passwordless SMS login for: $phoneNumber');
+    final maskedPhone = maskPhoneNumber(phoneNumber);
+    debugPrint(
+      '[Auth] Starting passwordless SMS login for phone ending in $maskedPhone',
+    );
     try {
       await _auth0.api.startPasswordlessWithPhoneNumber(
         phoneNumber: phoneNumber,
         passwordlessType: PasswordlessType.code,
       );
-      debugPrint('[Auth] SMS code sent successfully');
+      debugPrint('[Auth] SMS code sent successfully to $maskedPhone');
     } catch (e) {
-      debugPrint('[Auth] Failed to send SMS code: $e');
+      debugPrint('[Auth] Failed to send SMS code to $maskedPhone: $e');
       rethrow;
     }
   }

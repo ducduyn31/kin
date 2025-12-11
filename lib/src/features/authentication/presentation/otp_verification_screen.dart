@@ -78,7 +78,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                   });
                 },
                 onCompleted: (code) {
-                  debugPrint('[OtpVerificationScreen] OTP completed: $code');
+                  debugPrint('[OtpVerificationScreen] OTP completed');
                   _verifyCode();
                 },
               ),
@@ -126,7 +126,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       return;
     }
 
-    debugPrint('[OtpVerificationScreen] Verifying code: $_otpCode');
+    debugPrint('[OtpVerificationScreen] Verifying code');
     await ref
         .read(authProvider.notifier)
         .loginWithPhoneCode(

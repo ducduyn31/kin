@@ -9,21 +9,26 @@ class AnalyticsService {
 
   AnalyticsService._();
 
+  /// Tracks whether initialization has been attempted (prevents re-entry)
   bool _initialized = false;
 
+  /// Tracks whether PostHog setup completed successfully
+  bool _setupSuccessful = false;
+
   bool get isEnabled =>
-      _initialized && Env.isProduction && Env.posthogApiKey.isNotEmpty;
+      _setupSuccessful && Env.isProduction && Env.posthogApiKey.isNotEmpty;
 
   /// Initialize the analytics service.
   /// Must be called before any tracking methods.
   Future<void> initialize() async {
     if (_initialized) return;
+    _initialized = true; // Prevent concurrent initialization attempts
 
     if (Env.isDevelopment || Env.posthogApiKey.isEmpty) {
       debugPrint(
         '[Analytics] Disabled - ${Env.isDevelopment ? 'development mode' : 'no API key'}',
       );
-      _initialized = true;
+      // _setupSuccessful remains false - PostHog not available
       return;
     }
 
@@ -34,11 +39,11 @@ class AnalyticsService {
         ..debug = kDebugMode;
 
       await Posthog().setup(config);
-      _initialized = true;
+      _setupSuccessful = true;
       debugPrint('[Analytics] Initialized successfully');
     } catch (e) {
       debugPrint('[Analytics] Failed to initialize: $e');
-      _initialized = true;
+      // _setupSuccessful remains false - PostHog calls should not be made
     }
   }
 
@@ -82,7 +87,7 @@ class AnalyticsService {
   }
 
   Future<void> setEnabled(bool enabled) async {
-    if (!_initialized || Env.isDevelopment) return;
+    if (!_setupSuccessful) return;
 
     if (enabled) {
       await Posthog().enable();

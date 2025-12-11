@@ -120,7 +120,7 @@ class OtpInputState extends State<OtpInput> {
             width: 48,
             height: 56,
             child: KeyboardListener(
-              focusNode: FocusNode(),
+              focusNode: _focusNodes[index],
               onKeyEvent: (event) => _onKeyEvent(index, event),
               child: TextField(
                 controller: _controllers[index],

@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../services/analytics_service.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_state.dart';
 import '../domain/auth_user.dart';
@@ -36,22 +38,9 @@ class AuthNotifier extends Notifier<AuthState> {
     }
   }
 
-  Future<void> loginWithUniversalLogin() async {
-    state = const AuthState.loading();
-
-    try {
-      final result = await _repository.loginWithUniversalLogin();
-      state = AuthState.authenticated(
-        user: result.user,
-        accessToken: result.accessToken,
-      );
-    } catch (e) {
-      state = AuthState.error(_getErrorMessage(e));
-    }
-  }
-
   Future<void> loginWithGoogle() async {
     state = const AuthState.loading();
+    analytics.capture('login_started', {'method': 'google'});
 
     try {
       final result = await _repository.loginWithGoogle();
@@ -59,13 +48,20 @@ class AuthNotifier extends Notifier<AuthState> {
         user: result.user,
         accessToken: result.accessToken,
       );
+      analytics.capture('login_success', {'method': 'google'});
+      analytics.identify(result.user.id);
     } catch (e) {
+      analytics.capture('login_failed', {
+        'method': 'google',
+        'error': e.toString(),
+      });
       state = AuthState.error(_getErrorMessage(e));
     }
   }
 
   Future<void> loginWithApple() async {
     state = const AuthState.loading();
+    analytics.capture('login_started', {'method': 'apple'});
 
     try {
       final result = await _repository.loginWithApple();
@@ -73,20 +69,37 @@ class AuthNotifier extends Notifier<AuthState> {
         user: result.user,
         accessToken: result.accessToken,
       );
+      analytics.capture('login_success', {'method': 'apple'});
+      analytics.identify(result.user.id);
     } catch (e) {
+      analytics.capture('login_failed', {
+        'method': 'apple',
+        'error': e.toString(),
+      });
       state = AuthState.error(_getErrorMessage(e));
     }
   }
 
+  /// Initiates passwordless phone login by sending a verification code via SMS.
+  ///
+  /// Returns `true` if the code was sent successfully, `false` otherwise.
+  /// On success, the user should be prompted to enter the verification code
+  /// and then call [loginWithPhoneCode] to complete authentication.
+  ///
+  /// Note: This method intentionally does not set loading state to avoid
+  /// triggering AuthWrapper to replace the LoginScreen during the async call.
   Future<bool> startPhoneLogin({required String phoneNumber}) async {
-    state = const AuthState.loading();
+    debugPrint('[AuthProvider] startPhoneLogin called with: $phoneNumber');
+    analytics.capture('phone_login_started');
 
     try {
       await _repository.startPasswordlessWithPhone(phoneNumber: phoneNumber);
-      state = const AuthState.unauthenticated();
+      debugPrint('[AuthProvider] SMS sent successfully, returning true');
+      analytics.capture('phone_login_code_sent');
       return true;
     } catch (e) {
-      state = AuthState.error(_getErrorMessage(e));
+      debugPrint('[AuthProvider] startPhoneLogin failed: $e');
+      analytics.capture('phone_login_code_failed', {'error': e.toString()});
       return false;
     }
   }
@@ -96,6 +109,7 @@ class AuthNotifier extends Notifier<AuthState> {
     required String verificationCode,
   }) async {
     state = const AuthState.loading();
+    analytics.capture('phone_login_verify_started');
 
     try {
       final result = await _repository.loginWithPhoneCode(
@@ -106,20 +120,29 @@ class AuthNotifier extends Notifier<AuthState> {
         user: result.user,
         accessToken: result.accessToken,
       );
+      analytics.capture('login_success', {'method': 'phone'});
+      analytics.identify(result.user.id);
     } catch (e) {
+      analytics.capture('login_failed', {
+        'method': 'phone',
+        'error': e.toString(),
+      });
       state = AuthState.error(_getErrorMessage(e));
     }
   }
 
   Future<void> logout() async {
     state = const AuthState.loading();
+    analytics.capture('logout');
 
     try {
       await _repository.logout();
-    } catch (_) {
-      // Continue even if logout fails
+    } catch (e) {
+      debugPrint('[AuthProvider] Logout failed: $e');
+      analytics.capture('logout_failed', {'error': e.toString()});
     }
 
+    analytics.reset();
     state = const AuthState.unauthenticated();
   }
 

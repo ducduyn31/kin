@@ -38,6 +38,8 @@ jobs:
           AUTH0_AUDIENCE: ${{ vars.AUTH0_AUDIENCE }}
           APP_SCHEME: ${{ vars.APP_SCHEME }}
           API_BASE_URL: ${{ vars.API_BASE_URL }}
+          POSTHOG_API_KEY: ${{ vars.POSTHOG_API_KEY }}
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
 
       - name: Analyze
         run: task analyze
@@ -73,6 +75,8 @@ jobs:
           AUTH0_AUDIENCE: ${{ vars.AUTH0_AUDIENCE }}
           APP_SCHEME: ${{ vars.APP_SCHEME }}
           API_BASE_URL: ${{ vars.API_BASE_URL }}
+          POSTHOG_API_KEY: ${{ vars.POSTHOG_API_KEY }}
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
 
       # TODO: Enable artifact upload once build artifacts are needed
       # - name: Upload APK
@@ -109,6 +113,8 @@ jobs:
           AUTH0_AUDIENCE: ${{ vars.AUTH0_AUDIENCE }}
           APP_SCHEME: ${{ vars.APP_SCHEME }}
           API_BASE_URL: ${{ vars.API_BASE_URL }}
+          POSTHOG_API_KEY: ${{ vars.POSTHOG_API_KEY }}
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
 
       # TODO: Enable artifact upload once build artifacts are needed
       # - name: Upload iOS build

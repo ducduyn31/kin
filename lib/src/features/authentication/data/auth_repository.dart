@@ -1,4 +1,5 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../domain/auth_user.dart';
@@ -13,22 +14,6 @@ class AuthRepository {
   AuthRepository({Auth0? auth0, FlutterSecureStorage? secureStorage})
     : _auth0 = auth0 ?? Auth0(Auth0Config.domain, Auth0Config.clientId),
       _secureStorage = secureStorage ?? const FlutterSecureStorage();
-
-  Future<AuthResult> loginWithUniversalLogin() async {
-    final credentials = await _auth0
-        .webAuthentication(scheme: Auth0Config.scheme)
-        .login(
-          scopes: Auth0Config.scopes.split(' ').toSet(),
-          audience: Auth0Config.audience,
-        );
-
-    await _saveRefreshToken(credentials.refreshToken);
-
-    return AuthResult(
-      user: AuthUser.fromAuth0(credentials.user.toMap()),
-      accessToken: credentials.accessToken,
-    );
-  }
 
   Future<AuthResult> loginWithGoogle() async {
     final credentials = await _auth0
@@ -66,10 +51,17 @@ class AuthRepository {
 
   /// Start passwordless login with phone number (sends SMS code)
   Future<void> startPasswordlessWithPhone({required String phoneNumber}) async {
-    await _auth0.api.startPasswordlessWithPhoneNumber(
-      phoneNumber: phoneNumber,
-      passwordlessType: PasswordlessType.code,
-    );
+    debugPrint('[Auth] Starting passwordless SMS login for: $phoneNumber');
+    try {
+      await _auth0.api.startPasswordlessWithPhoneNumber(
+        phoneNumber: phoneNumber,
+        passwordlessType: PasswordlessType.code,
+      );
+      debugPrint('[Auth] SMS code sent successfully');
+    } catch (e) {
+      debugPrint('[Auth] Failed to send SMS code: $e');
+      rethrow;
+    }
   }
 
   /// Complete passwordless login with phone number and verification code
@@ -100,8 +92,8 @@ class AuthRepository {
   Future<void> logout() async {
     try {
       await _auth0.webAuthentication(scheme: Auth0Config.scheme).logout();
-    } catch (_) {
-      // Continue even if web logout fails
+    } catch (e) {
+      debugPrint('[AuthRepository] Web logout failed: $e');
     }
 
     await _clearRefreshToken();

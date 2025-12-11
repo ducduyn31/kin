@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kin/src/l10n/app_localizations.dart';
 import '../application/user_provider.dart';
 import '../../authentication/application/auth_provider.dart';
 import '../../contacts/domain/contact.dart';

@@ -22,8 +22,9 @@ tasks:
 
   # Code generation
   generate:
-    desc: Run build_runner to generate code
+    desc: Run build_runner and l10n to generate code
     cmds:
+      - '{{.FLUTTER}} gen-l10n'
       - '{{.DART}} run build_runner build --delete-conflicting-outputs'
 
   # Development

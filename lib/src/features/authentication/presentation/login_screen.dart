@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kin/src/l10n/app_localizations.dart';
 
 import '../application/auth_provider.dart';
 import '../domain/auth_state.dart';
@@ -188,16 +188,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     if (_completePhoneNumber == null || _completePhoneNumber!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseEnterPhoneNumber)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterPhoneNumber)));
       return;
     }
 
     if (!_isPhoneValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseEnterValidPhoneNumber)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterValidPhoneNumber)));
       return;
     }
 

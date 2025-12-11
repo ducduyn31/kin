@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:kin/src/l10n/app_localizations.dart';
 import '../application/messages_provider.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';

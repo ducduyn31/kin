@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../application/user_provider.dart';
 import '../../authentication/application/auth_provider.dart';
 import '../../contacts/domain/contact.dart';
@@ -11,10 +12,11 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l10n.profile),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
@@ -57,7 +59,7 @@ class ProfileScreen extends ConsumerWidget {
                         child: CircleAvatar(
                           radius: 12,
                           backgroundColor: user.status.color,
-                          child: Icon(
+                          child: const Icon(
                             Icons.check,
                             size: 12,
                             color: Colors.white,
@@ -93,7 +95,7 @@ class ProfileScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Availability',
+                      l10n.availability,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -141,25 +143,25 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   _MenuTile(
                     icon: Icons.notifications_outlined,
-                    title: 'Notifications',
+                    title: l10n.notifications,
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   _MenuTile(
                     icon: Icons.lock_outline,
-                    title: 'Privacy',
+                    title: l10n.privacy,
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   _MenuTile(
                     icon: Icons.palette_outlined,
-                    title: 'Appearance',
+                    title: l10n.appearance,
                     onTap: () {},
                   ),
                   const Divider(height: 1),
                   _MenuTile(
                     icon: Icons.help_outline,
-                    title: 'Help & Support',
+                    title: l10n.helpAndSupport,
                     onTap: () {},
                   ),
                 ],
@@ -172,7 +174,7 @@ class ProfileScreen extends ConsumerWidget {
             child: Card(
               child: _MenuTile(
                 icon: Icons.logout,
-                title: 'Log Out',
+                title: l10n.logOut,
                 iconColor: theme.colorScheme.error,
                 textColor: theme.colorScheme.error,
                 onTap: () => _showLogoutDialog(context, ref),
@@ -186,22 +188,23 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log Out'),
-        content: const Text('Are you sure you want to log out?'),
+        title: Text(l10n.logOut),
+        content: Text(l10n.logOutConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
               Navigator.of(context).pop();
               ref.read(authProvider.notifier).logout();
             },
-            child: const Text('Log Out'),
+            child: Text(l10n.logOut),
           ),
         ],
       ),
@@ -220,11 +223,18 @@ class _StatusOption extends StatelessWidget {
     required this.onTap,
   });
 
-  String _getStatusText(AvailabilityStatus status) {
-    if (status == AvailabilityStatus.offline) {
-      return 'Appear Offline';
+  String _getStatusText(BuildContext context, AvailabilityStatus status) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (status) {
+      case AvailabilityStatus.available:
+        return l10n.statusAvailable;
+      case AvailabilityStatus.busy:
+        return l10n.statusBusy;
+      case AvailabilityStatus.away:
+        return l10n.statusAway;
+      case AvailabilityStatus.offline:
+        return l10n.appearOffline;
     }
-    return status.label;
   }
 
   @override
@@ -239,7 +249,7 @@ class _StatusOption extends StatelessWidget {
         height: 12,
         decoration: BoxDecoration(color: status.color, shape: BoxShape.circle),
       ),
-      title: Text(_getStatusText(status)),
+      title: Text(_getStatusText(context, status)),
       trailing: isSelected
           ? Icon(Icons.check, color: theme.colorScheme.primary)
           : null,

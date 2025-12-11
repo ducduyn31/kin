@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../application/auth_provider.dart';
 import '../domain/auth_state.dart';
@@ -33,6 +34,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.status == AuthStatus.error && next.errorMessage != null) {
@@ -63,7 +65,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Kin',
+                  l10n.appName,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -72,7 +74,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Stay connected with friends & family',
+                  l10n.appTagline,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
@@ -86,7 +88,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ? null
                       : () => ref.read(authProvider.notifier).loginWithGoogle(),
                   icon: Icons.g_mobiledata_rounded,
-                  label: 'Continue with Google',
+                  label: l10n.continueWithGoogle,
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black87,
                 ),
@@ -100,7 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : () =>
                               ref.read(authProvider.notifier).loginWithApple(),
                     icon: Icons.apple_rounded,
-                    label: 'Continue with Apple',
+                    label: l10n.continueWithApple,
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                   ),
@@ -114,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'or',
+                        l10n.or,
                         style: TextStyle(color: colorScheme.onSurfaceVariant),
                       ),
                     ),
@@ -125,13 +127,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Phone number input
                 IntlPhoneField(
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.phoneNumber,
+                    border: const OutlineInputBorder(),
                   ),
                   initialCountryCode: _getInitialCountryCode(),
                   disableLengthCheck: false,
-                  invalidNumberMessage: 'Invalid phone number',
+                  invalidNumberMessage: l10n.invalidPhoneNumber,
                   onChanged: (PhoneNumber phone) {
                     bool isValid;
                     try {
@@ -161,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   child: _isSendingCode
                       ? _loadingIndicator
-                      : const Text('Send Verification Code'),
+                      : Text(l10n.sendVerificationCode),
                 ),
               ],
             ),
@@ -183,6 +185,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _sendCode() async {
+    final l10n = AppLocalizations.of(context)!;
+
+    if (_completePhoneNumber == null || _completePhoneNumber!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseEnterPhoneNumber)),
+      );
+      return;
+    }
+
+    if (!_isPhoneValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseEnterValidPhoneNumber)),
+      );
+      return;
+    }
+
     debugPrint('[LoginScreen] _sendCode called for: $_completePhoneNumber');
     setState(() => _isSendingCode = true);
 
@@ -199,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       debugPrint('[LoginScreen] Navigating to OTP screen');
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Verification code sent!')));
+      ).showSnackBar(SnackBar(content: Text(l10n.verificationCodeSent)));
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) =>
@@ -209,7 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Failed to send verification code'),
+          content: Text(l10n.failedToSendVerificationCode),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

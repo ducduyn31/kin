@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../application/messages_provider.dart';
 import 'widgets/message_bubble.dart';
 import 'widgets/message_input.dart';
@@ -18,6 +19,7 @@ class ChatScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final messages = ref.watch(messagesProvider(conversationId));
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +43,7 @@ class ChatScreen extends ConsumerWidget {
               children: [
                 Text(contactName, style: const TextStyle(fontSize: 16)),
                 Text(
-                  'Online',
+                  l10n.online,
                   style: TextStyle(
                     fontSize: 12,
                     color: theme.colorScheme.onSurfaceVariant,
@@ -78,7 +80,7 @@ class ChatScreen extends ConsumerWidget {
             child: messages.isEmpty
                 ? Center(
                     child: Text(
-                      'No messages yet.\nSend a message to start the conversation!',
+                      l10n.noMessagesYet,
                       textAlign: TextAlign.center,
                       style: TextStyle(color: theme.colorScheme.outline),
                     ),

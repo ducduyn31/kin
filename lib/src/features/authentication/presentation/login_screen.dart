@@ -66,17 +66,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   'Kin',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: colorScheme.primary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   'Stay connected with friends & family',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
+                    color: colorScheme.onSurfaceVariant,
+                  ),
                 ),
                 const SizedBox(height: 48),
 
@@ -84,8 +84,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 _SocialLoginButton(
                   onPressed: authState.isLoading
                       ? null
-                      : () =>
-                          ref.read(authProvider.notifier).loginWithGoogle(),
+                      : () => ref.read(authProvider.notifier).loginWithGoogle(),
                   icon: Icons.g_mobiledata_rounded,
                   label: 'Continue with Google',
                   backgroundColor: Colors.white,
@@ -99,7 +98,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     onPressed: authState.isLoading
                         ? null
                         : () =>
-                            ref.read(authProvider.notifier).loginWithApple(),
+                              ref.read(authProvider.notifier).loginWithApple(),
                     icon: Icons.apple_rounded,
                     label: 'Continue with Apple',
                     backgroundColor: Colors.black,
@@ -153,7 +152,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 16),
                 FilledButton(
-                  onPressed: _isSendingCode || !_isPhoneValid || authState.isLoading
+                  onPressed:
+                      _isSendingCode || !_isPhoneValid || authState.isLoading
                       ? null
                       : _sendCode,
                   style: FilledButton.styleFrom(
@@ -197,14 +197,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     if (success) {
       debugPrint('[LoginScreen] Navigating to OTP screen');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code sent!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Verification code sent!')));
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => OtpVerificationScreen(
-            phoneNumber: _completePhoneNumber!,
-          ),
+          builder: (_) =>
+              OtpVerificationScreen(phoneNumber: _completePhoneNumber!),
         ),
       );
     } else {

@@ -8,10 +8,7 @@ import 'otp_input.dart';
 class OtpVerificationScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
 
-  const OtpVerificationScreen({
-    super.key,
-    required this.phoneNumber,
-  });
+  const OtpVerificationScreen({super.key, required this.phoneNumber});
 
   @override
   ConsumerState<OtpVerificationScreen> createState() =>
@@ -48,9 +45,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verify Code'),
-      ),
+      appBar: AppBar(title: const Text('Verify Code')),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -59,17 +54,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
             children: [
               Text(
                 'Enter verification code',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 'Enter the 6-digit code sent to\n${widget.phoneNumber}',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -132,7 +127,9 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     }
 
     debugPrint('[OtpVerificationScreen] Verifying code: $_otpCode');
-    await ref.read(authProvider.notifier).loginWithPhoneCode(
+    await ref
+        .read(authProvider.notifier)
+        .loginWithPhoneCode(
           phoneNumber: widget.phoneNumber,
           verificationCode: _otpCode,
         );

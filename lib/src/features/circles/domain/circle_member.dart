@@ -63,8 +63,14 @@ class CircleMember {
     );
   }
 
-  /// Display name (nickname if set, otherwise name)
-  String get displayName => nickname ?? name;
+  /// Returns the best available name (nickname > name), or null if none
+  String? get resolvedName {
+    final nick = nickname?.trim();
+    if (nick != null && nick.isNotEmpty) return nick;
+    final trimmedName = name.trim();
+    if (trimmedName.isNotEmpty) return trimmedName;
+    return null;
+  }
 
   bool get isAdmin => role == MemberRole.admin;
 

@@ -1,9 +1,81 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kin/src/l10n/app_localizations.dart';
 import '../domain/availability_status.dart';
 import '../domain/availability.dart';
 
-/// Bottom sheet for setting user's availability status
+String getAvailabilityDurationLabel(
+  AvailabilityDuration duration,
+  AppLocalizations l10n,
+) {
+  switch (duration) {
+    case AvailabilityDuration.indefinite:
+      return l10n.availabilityDurationIndefinite;
+    case AvailabilityDuration.thirtyMinutes:
+      return l10n.availabilityDurationThirtyMinutes;
+    case AvailabilityDuration.oneHour:
+      return l10n.availabilityDurationOneHour;
+    case AvailabilityDuration.fourHours:
+      return l10n.availabilityDurationFourHours;
+    case AvailabilityDuration.untilTomorrow:
+      return l10n.availabilityDurationUntilTomorrow;
+  }
+}
+
+String getStatusDescription(AvailabilityStatus status, AppLocalizations l10n) {
+  switch (status) {
+    case AvailabilityStatus.free:
+      return l10n.statusDescriptionFree;
+    case AvailabilityStatus.busy:
+      return l10n.statusDescriptionBusy;
+    case AvailabilityStatus.doNotDisturb:
+      return l10n.statusDescriptionDoNotDisturb;
+    case AvailabilityStatus.sleeping:
+      return l10n.statusDescriptionSleeping;
+    case AvailabilityStatus.away:
+      return l10n.statusDescriptionAway;
+    case AvailabilityStatus.offline:
+      return l10n.statusDescriptionOffline;
+  }
+}
+
+String getStatusLabel(AvailabilityStatus status, AppLocalizations l10n) {
+  switch (status) {
+    case AvailabilityStatus.free:
+      return l10n.statusLabelFree;
+    case AvailabilityStatus.busy:
+      return l10n.statusLabelBusy;
+    case AvailabilityStatus.doNotDisturb:
+      return l10n.statusLabelDoNotDisturb;
+    case AvailabilityStatus.sleeping:
+      return l10n.statusLabelSleeping;
+    case AvailabilityStatus.away:
+      return l10n.statusLabelAway;
+    case AvailabilityStatus.offline:
+      return l10n.statusLabelOffline;
+  }
+}
+
+String getStatusLabelLowercase(
+  AvailabilityStatus status,
+  AppLocalizations l10n,
+) {
+  switch (status) {
+    case AvailabilityStatus.free:
+      return l10n.statusLabelFreeLowercase;
+    case AvailabilityStatus.busy:
+      return l10n.statusLabelBusyLowercase;
+    case AvailabilityStatus.doNotDisturb:
+      return l10n.statusLabelDoNotDisturbLowercase;
+    case AvailabilityStatus.sleeping:
+      return l10n.statusLabelSleepingLowercase;
+    case AvailabilityStatus.away:
+      return l10n.statusLabelAwayLowercase;
+    case AvailabilityStatus.offline:
+      return l10n.statusLabelOfflineLowercase;
+  }
+}
+
 class SetAvailabilitySheet extends ConsumerStatefulWidget {
   final AvailabilityStatus? currentStatus;
   final String? currentStatusMessage;
@@ -21,7 +93,6 @@ class SetAvailabilitySheet extends ConsumerStatefulWidget {
     this.onSave,
   });
 
-  /// Show the sheet as a modal bottom sheet
   static Future<void> show(
     BuildContext context, {
     AvailabilityStatus? currentStatus,
@@ -73,6 +144,7 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -90,7 +162,7 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Set Your Status',
+                    l10n.setYourStatus,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -110,6 +182,8 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
                     (status) => _StatusOption(
                       status: status,
                       isSelected: _selectedStatus == status,
+                      label: getStatusLabel(status, l10n),
+                      description: getStatusDescription(status, l10n),
                       onTap: () {
                         setState(() {
                           _selectedStatus = status;
@@ -124,8 +198,8 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
               TextField(
                 controller: _messageController,
                 decoration: InputDecoration(
-                  labelText: 'Status message (optional)',
-                  hintText: 'What are you up to?',
+                  labelText: l10n.statusMessageOptional,
+                  hintText: l10n.statusMessageHint,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.edit_note),
                   suffixIcon: _messageController.text.isNotEmpty
@@ -147,7 +221,7 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
 
               // Duration selector
               Text(
-                'Duration',
+                l10n.duration,
                 style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
@@ -159,7 +233,7 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
                 children: AvailabilityDuration.values.map((duration) {
                   final isSelected = _selectedDuration == duration;
                   return ChoiceChip(
-                    label: Text(duration.label),
+                    label: Text(getAvailabilityDurationLabel(duration, l10n)),
                     selected: isSelected,
                     onSelected: (_) {
                       setState(() {
@@ -175,11 +249,10 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
               // Save button
               FilledButton(
                 onPressed: () {
+                  final trimmed = _messageController.text.trim();
                   widget.onSave?.call(
                     _selectedStatus,
-                    _messageController.text.isEmpty
-                        ? null
-                        : _messageController.text,
+                    trimmed.isEmpty ? null : trimmed,
                     _selectedDuration,
                   );
                   Navigator.pop(context);
@@ -191,7 +264,9 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
                     children: [
                       Icon(_selectedStatus.icon, size: 20),
                       const SizedBox(width: 8),
-                      Text('Set as ${_selectedStatus.label}'),
+                      Text(
+                        l10n.setAsStatus(getStatusLabel(_selectedStatus, l10n)),
+                      ),
                     ],
                   ),
                 ),
@@ -209,30 +284,17 @@ class _SetAvailabilitySheetState extends ConsumerState<SetAvailabilitySheet> {
 class _StatusOption extends StatelessWidget {
   final AvailabilityStatus status;
   final bool isSelected;
+  final String label;
+  final String description;
   final VoidCallback onTap;
 
   const _StatusOption({
     required this.status,
     required this.isSelected,
+    required this.label,
+    required this.description,
     required this.onTap,
   });
-
-  String get _description {
-    switch (status) {
-      case AvailabilityStatus.free:
-        return 'Ready to chat or call';
-      case AvailabilityStatus.busy:
-        return 'I\'m occupied right now';
-      case AvailabilityStatus.doNotDisturb:
-        return 'No notifications please';
-      case AvailabilityStatus.sleeping:
-        return 'Catching some Z\'s';
-      case AvailabilityStatus.away:
-        return 'Away from my phone';
-      case AvailabilityStatus.offline:
-        return 'Appear offline';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +326,7 @@ class _StatusOption extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      status.label,
+                      label,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                         color: isSelected
@@ -273,7 +335,7 @@ class _StatusOption extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _description,
+                      description,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: isSelected
                             ? colorScheme.onPrimaryContainer.withValues(

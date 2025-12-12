@@ -1,4 +1,11 @@
-/// Type of circle invitation
+import 'package:flutter/foundation.dart';
+
+class _Undefined {
+  const _Undefined();
+}
+
+const _undefined = _Undefined();
+
 enum InvitationType {
   direct, // Invite specific user
   link, // Shareable link
@@ -12,13 +19,16 @@ extension InvitationTypeX on InvitationType {
       case 'direct':
         return InvitationType.direct;
       case 'link':
+        return InvitationType.link;
       default:
+        debugPrint(
+          '[InvitationTypeX] Unknown InvitationType value: $value, defaulting to link',
+        );
         return InvitationType.link;
     }
   }
 }
 
-/// Status of an invitation
 enum InvitationStatus { pending, accepted, expired, revoked }
 
 extension InvitationStatusX on InvitationStatus {
@@ -35,12 +45,14 @@ extension InvitationStatusX on InvitationStatus {
       case 'revoked':
         return InvitationStatus.revoked;
       default:
+        debugPrint(
+          '[InvitationStatusX] Unknown InvitationStatus value: $value, defaulting to pending',
+        );
         return InvitationStatus.pending;
     }
   }
 }
 
-/// An invitation to join a circle
 class CircleInvitation {
   final String id;
   final String circleId;
@@ -68,19 +80,36 @@ class CircleInvitation {
     this.expiresAt,
     required this.createdAt,
     required this.updatedAt,
-  });
+  }) : assert(
+         type != InvitationType.direct || inviteeId != null,
+         'Direct invitations must have an inviteeId',
+       ),
+       assert(
+         type != InvitationType.direct || (maxUses != null && maxUses == 1),
+         'Direct invitations must be single-use (maxUses == 1)',
+       ),
+       assert(
+         type != InvitationType.link || inviteeId == null,
+         'Link invitations must not have an inviteeId',
+       ),
+       assert(useCount >= 0, 'useCount cannot be negative'),
+       assert(maxUses == null || maxUses >= 0, 'maxUses cannot be negative'),
+       assert(
+         maxUses == null || useCount <= maxUses,
+         'useCount cannot exceed maxUses',
+       );
 
   CircleInvitation copyWith({
     String? id,
     String? circleId,
     String? inviterId,
-    String? inviteeId,
+    Object? inviteeId = _undefined,
     InvitationType? type,
     String? code,
     InvitationStatus? status,
-    int? maxUses,
+    Object? maxUses = _undefined,
     int? useCount,
-    DateTime? expiresAt,
+    Object? expiresAt = _undefined,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -88,13 +117,17 @@ class CircleInvitation {
       id: id ?? this.id,
       circleId: circleId ?? this.circleId,
       inviterId: inviterId ?? this.inviterId,
-      inviteeId: inviteeId ?? this.inviteeId,
+      inviteeId: inviteeId == _undefined
+          ? this.inviteeId
+          : inviteeId as String?,
       type: type ?? this.type,
       code: code ?? this.code,
       status: status ?? this.status,
-      maxUses: maxUses ?? this.maxUses,
+      maxUses: maxUses == _undefined ? this.maxUses : maxUses as int?,
       useCount: useCount ?? this.useCount,
-      expiresAt: expiresAt ?? this.expiresAt,
+      expiresAt: expiresAt == _undefined
+          ? this.expiresAt
+          : expiresAt as DateTime?,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -108,10 +141,10 @@ class CircleInvitation {
   bool get isUsable {
     if (status != InvitationStatus.pending) return false;
     if (isExpired) return false;
-    if (maxUses != null && useCount >= maxUses!) return false;
+    final effectiveMaxUses = type == InvitationType.direct ? 1 : maxUses;
+    if (effectiveMaxUses != null && useCount >= effectiveMaxUses) return false;
     return true;
   }
 
-  /// Get the shareable link for this invitation
-  String get shareLink => 'kin://join/$code';
+  Uri get shareLink => Uri(scheme: 'kin', host: 'join', pathSegments: [code]);
 }

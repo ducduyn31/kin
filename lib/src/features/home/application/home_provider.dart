@@ -1,55 +1,148 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/contact_with_availability.dart';
 import '../../circles/application/circles_provider.dart';
+import '../../circles/domain/circle_member.dart';
 import '../../availability/domain/availability_status.dart';
+import '../../authentication/application/auth_provider.dart';
 
-/// Provider that aggregates all contacts from all circles into a single list
-/// with their availability status for the home screen grid
-final allContactsProvider = Provider<List<ContactWithAvailability>>((ref) {
-  final circles = ref.watch(circlesProvider);
+const _statusPriority = [
+  AvailabilityStatus.free,
+  AvailabilityStatus.away,
+  AvailabilityStatus.busy,
+  AvailabilityStatus.doNotDisturb,
+  AvailabilityStatus.sleeping,
+  AvailabilityStatus.offline,
+];
 
-  // Collect all members from all circles, excluding current user
-  final contactsMap = <String, ContactWithAvailability>{};
+AvailabilityStatus _pickBestStatus(AvailabilityStatus a, AvailabilityStatus b) {
+  final priorityA = _statusPriority.indexOf(a);
+  final priorityB = _statusPriority.indexOf(b);
+  return priorityA <= priorityB ? a : b;
+}
 
-  for (final circle in circles) {
-    final members = ref.watch(circleMembersProvider(circle.id));
+T _pickLatest<T>(
+  T current,
+  T candidate,
+  DateTime? currentLastSeen,
+  DateTime? candidateLastSeen,
+) {
+  if (candidateLastSeen == null) return current;
+  if (currentLastSeen == null) return candidate;
+  return candidateLastSeen.isAfter(currentLastSeen) ? candidate : current;
+}
 
-    for (final member in members) {
-      // Skip current user
-      if (member.userId == 'current-user') continue;
+T? _pickLatestNonNull<T>(
+  T? current,
+  T? candidate,
+  DateTime? currentLastSeen,
+  DateTime? candidateLastSeen,
+) {
+  // If candidate is null, keep current regardless of timestamps
+  if (candidate == null) return current;
+  // If current is null, use candidate
+  if (current == null) return candidate;
+  // Both non-null: pick based on most recent lastSeen
+  if (candidateLastSeen == null) return current;
+  if (currentLastSeen == null) return candidate;
+  return candidateLastSeen.isAfter(currentLastSeen) ? candidate : current;
+}
 
-      if (contactsMap.containsKey(member.userId)) {
-        // Update existing contact with additional circle
-        final existing = contactsMap[member.userId]!;
-        contactsMap[member.userId] = existing.copyWith(
-          circleIds: [...existing.circleIds, circle.id],
-          // Keep the first nickname found
-          circleNickname: existing.circleNickname ?? member.nickname,
-          // Update status if newer
-          status: member.status,
-          statusMessage: member.statusMessage,
-          lastSeen: member.lastSeen,
-        );
-      } else {
-        // Add new contact
-        contactsMap[member.userId] = ContactWithAvailability(
-          userId: member.userId,
-          name: member.name,
-          avatarUrl: member.avatarUrl,
-          status: member.status,
-          statusMessage: member.statusMessage,
-          lastSeen: member.lastSeen,
-          circleIds: [circle.id],
-          circleNickname: member.nickname,
-        );
+class HomeNotifier extends Notifier<List<ContactWithAvailability>> {
+  @override
+  List<ContactWithAvailability> build() {
+    final circles = ref.watch(circlesProvider);
+    final allMembersByCircle = ref.watch(circleMembersNotifierProvider);
+    final currentUserId = ref.watch(currentAuthUserProvider)?.id;
+
+    final contactsMap = <String, _ContactAccumulator>{};
+
+    for (final circle in circles) {
+      final members = allMembersByCircle[circle.id] ?? <CircleMember>[];
+
+      for (final member in members) {
+        if (currentUserId != null && member.userId == currentUserId) continue;
+
+        if (contactsMap.containsKey(member.userId)) {
+          final existing = contactsMap[member.userId]!;
+          existing.circleIds.add(circle.id);
+
+          final bestStatus = _pickBestStatus(existing.status, member.status);
+          final bestStatusMessage = _pickLatestNonNull(
+            existing.statusMessage,
+            member.statusMessage,
+            existing.lastSeen,
+            member.lastSeen,
+          );
+          final bestLastSeen = _pickLatest(
+            existing.lastSeen,
+            member.lastSeen,
+            existing.lastSeen,
+            member.lastSeen,
+          );
+
+          existing.status = bestStatus;
+          existing.statusMessage = bestStatusMessage;
+          existing.lastSeen = bestLastSeen;
+          existing.circleNickname ??= member.nickname;
+        } else {
+          contactsMap[member.userId] = _ContactAccumulator(
+            userId: member.userId,
+            name: member.name,
+            avatarUrl: member.avatarUrl,
+            status: member.status,
+            statusMessage: member.statusMessage,
+            lastSeen: member.lastSeen,
+            circleIds: {circle.id},
+            circleNickname: member.nickname,
+          );
+        }
       }
     }
+
+    return contactsMap.values
+        .map(
+          (acc) => ContactWithAvailability(
+            userId: acc.userId,
+            name: acc.name,
+            avatarUrl: acc.avatarUrl,
+            status: acc.status,
+            statusMessage: acc.statusMessage,
+            lastSeen: acc.lastSeen,
+            circleIds: acc.circleIds.toList(),
+            circleNickname: acc.circleNickname,
+          ),
+        )
+        .toList();
   }
+}
 
-  return contactsMap.values.toList();
-});
+class _ContactAccumulator {
+  final String userId;
+  final String name;
+  final String? avatarUrl;
+  AvailabilityStatus status;
+  String? statusMessage;
+  DateTime? lastSeen;
+  final Set<String> circleIds;
+  String? circleNickname;
 
-/// Provider for contacts sorted by availability (free contacts first)
+  _ContactAccumulator({
+    required this.userId,
+    required this.name,
+    this.avatarUrl,
+    required this.status,
+    this.statusMessage,
+    this.lastSeen,
+    required this.circleIds,
+    this.circleNickname,
+  });
+}
+
+final allContactsProvider =
+    NotifierProvider<HomeNotifier, List<ContactWithAvailability>>(
+      HomeNotifier.new,
+    );
+
 final contactsSortedByAvailabilityProvider =
     Provider<List<ContactWithAvailability>>((ref) {
       final contacts = ref.watch(allContactsProvider);
@@ -73,7 +166,6 @@ final contactsSortedByAvailabilityProvider =
       return sorted;
     });
 
-/// Provider for contacts grouped by status
 final contactsGroupedByStatusProvider =
     Provider<Map<AvailabilityStatus, List<ContactWithAvailability>>>((ref) {
       final contacts = ref.watch(allContactsProvider);
@@ -86,19 +178,16 @@ final contactsGroupedByStatusProvider =
       return grouped;
     });
 
-/// Provider for count of free contacts
 final freeContactsCountProvider = Provider<int>((ref) {
   final contacts = ref.watch(allContactsProvider);
   return contacts.where((c) => c.status == AvailabilityStatus.free).length;
 });
 
-/// Enum for home screen view mode
 enum HomeViewMode {
   byAvailability, // Flat grid sorted by availability
   byCircle, // Grouped by circle
 }
 
-/// Provider for current home view mode
 final homeViewModeProvider =
     NotifierProvider<HomeViewModeNotifier, HomeViewMode>(
       HomeViewModeNotifier.new,
@@ -119,7 +208,6 @@ class HomeViewModeNotifier extends Notifier<HomeViewMode> {
   }
 }
 
-/// Provider for status filter
 final statusFilterProvider =
     NotifierProvider<StatusFilterNotifier, AvailabilityStatus?>(
       StatusFilterNotifier.new,
@@ -138,7 +226,6 @@ class StatusFilterNotifier extends Notifier<AvailabilityStatus?> {
   }
 }
 
-/// Provider for filtered contacts based on status filter
 final filteredContactsProvider = Provider<List<ContactWithAvailability>>((ref) {
   final contacts = ref.watch(contactsSortedByAvailabilityProvider);
   final filter = ref.watch(statusFilterProvider);

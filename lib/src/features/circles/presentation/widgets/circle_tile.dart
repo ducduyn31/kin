@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../domain/circle.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../availability/domain/availability_status.dart';
+import '../../domain/circle.dart';
 
-/// List tile for displaying a circle
 class CircleTile extends StatelessWidget {
   final Circle circle;
   final int freeCount;
@@ -19,6 +19,7 @@ class CircleTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return ListTile(
       leading: CircleAvatarWidget(
@@ -33,9 +34,13 @@ class CircleTile extends StatelessWidget {
       ),
       subtitle: Row(
         children: [
-          Text(
-            '${circle.memberCount} members',
-            style: theme.textTheme.bodySmall,
+          Flexible(
+            child: Text(
+              l10n.membersCount(circle.memberCount),
+              style: theme.textTheme.bodySmall,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
           ),
           if (circle.isAdmin) ...[
             const SizedBox(width: 8),
@@ -46,7 +51,7 @@ class CircleTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Admin',
+                l10n.admin,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: colorScheme.onPrimaryContainer,
                 ),
@@ -72,7 +77,7 @@ class CircleTile extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '$freeCount free',
+                    l10n.freeWithCount(freeCount),
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: AvailabilityStatus.free.color,
                       fontWeight: FontWeight.w500,
@@ -104,7 +109,6 @@ class CircleAvatarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    // Get icon based on circle name
     IconData icon = Icons.groups;
     if (name.toLowerCase().contains('family')) {
       icon = Icons.family_restroom;
@@ -114,22 +118,26 @@ class CircleAvatarWidget extends StatelessWidget {
       icon = Icons.work;
     }
 
+    final trimmedAvatarUrl = avatarUrl?.trim();
+    final hasValidAvatar =
+        trimmedAvatarUrl != null && trimmedAvatarUrl.isNotEmpty;
+
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
-        image: avatarUrl != null
+        image: hasValidAvatar
             ? DecorationImage(
-                image: NetworkImage(avatarUrl!),
+                image: NetworkImage(trimmedAvatarUrl),
                 fit: BoxFit.cover,
               )
             : null,
       ),
-      child: avatarUrl == null
-          ? Icon(icon, color: colorScheme.onPrimaryContainer, size: size * 0.5)
-          : null,
+      child: hasValidAvatar
+          ? null
+          : Icon(icon, color: colorScheme.onPrimaryContainer, size: size * 0.5),
     );
   }
 }

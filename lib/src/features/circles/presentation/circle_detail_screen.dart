@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/circles_provider.dart';
 import '../domain/circle.dart';
 import '../domain/circle_member.dart';
+import '../../authentication/application/auth_provider.dart';
 import '../../availability/domain/availability_status.dart';
+import '../../availability/presentation/set_availability_sheet.dart';
 import 'widgets/circle_tile.dart';
 import 'widgets/member_tile.dart';
 
@@ -17,18 +20,20 @@ class CircleDetailScreen extends ConsumerWidget {
     final circle = ref.watch(circleByIdProvider(circleId));
     final members = ref.watch(circleMembersProvider(circleId));
     final freeCount = ref.watch(circleFreeCountProvider(circleId));
+    final currentUserId = ref.watch(currentAuthUserProvider)?.id;
+
+    final l10n = AppLocalizations.of(context)!;
 
     if (circle == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Circle')),
-        body: const Center(child: Text('Circle not found')),
+        appBar: AppBar(title: Text(l10n.circle)),
+        body: Center(child: Text(l10n.circleNotFound)),
       );
     }
 
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    // Sort members: online first, then by status
     final sortedMembers = List.of(members);
     sortedMembers.sort((a, b) {
       final statusOrder = [
@@ -39,9 +44,12 @@ class CircleDetailScreen extends ConsumerWidget {
         AvailabilityStatus.sleeping,
         AvailabilityStatus.offline,
       ];
-      return statusOrder
-          .indexOf(a.status)
-          .compareTo(statusOrder.indexOf(b.status));
+      var indexA = statusOrder.indexOf(a.status);
+      var indexB = statusOrder.indexOf(b.status);
+
+      if (indexA == -1) indexA = statusOrder.length;
+      if (indexB == -1) indexB = statusOrder.length;
+      return indexA.compareTo(indexB);
     });
 
     return Scaffold(
@@ -60,7 +68,7 @@ class CircleDetailScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: Navigate to circle group chat
             },
-            tooltip: 'Group chat',
+            tooltip: l10n.groupChat,
           ),
         ],
       ),
@@ -95,7 +103,7 @@ class CircleDetailScreen extends ConsumerWidget {
                 ],
                 const SizedBox(height: 8),
                 Text(
-                  '${circle.memberCount} members',
+                  l10n.membersCount(circle.memberCount),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
@@ -113,7 +121,7 @@ class CircleDetailScreen extends ConsumerWidget {
                   child: _StatCard(
                     icon: Icons.circle,
                     iconColor: AvailabilityStatus.free.color,
-                    label: 'Free now',
+                    label: l10n.freeNow,
                     value: '$freeCount',
                   ),
                 ),
@@ -122,7 +130,7 @@ class CircleDetailScreen extends ConsumerWidget {
                   child: _StatCard(
                     icon: Icons.people,
                     iconColor: colorScheme.primary,
-                    label: 'Members',
+                    label: l10n.members,
                     value: '${circle.memberCount}',
                   ),
                 ),
@@ -139,7 +147,7 @@ class CircleDetailScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Members',
+                  l10n.members,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -147,10 +155,10 @@ class CircleDetailScreen extends ConsumerWidget {
                 if (circle.isAdmin)
                   TextButton.icon(
                     onPressed: () {
-                      _showInviteOptions(context);
+                      _showInviteOptions(context, l10n);
                     },
                     icon: const Icon(Icons.person_add, size: 18),
-                    label: const Text('Invite'),
+                    label: Text(l10n.invite),
                   ),
               ],
             ),
@@ -161,7 +169,13 @@ class CircleDetailScreen extends ConsumerWidget {
             (member) => MemberTile(
               member: member,
               onTap: () {
-                _showMemberActions(context, member, circle.isAdmin);
+                _showMemberActions(
+                  context,
+                  member,
+                  circle.isAdmin,
+                  currentUserId,
+                  l10n,
+                );
               },
             ),
           ),
@@ -173,11 +187,11 @@ class CircleDetailScreen extends ConsumerWidget {
           ListTile(
             leading: Icon(Icons.exit_to_app, color: colorScheme.error),
             title: Text(
-              'Leave Circle',
+              l10n.leaveCircle,
               style: TextStyle(color: colorScheme.error),
             ),
             onTap: () {
-              _showLeaveConfirmation(context, circle);
+              _showLeaveConfirmation(context, circle, l10n);
             },
           ),
 
@@ -187,39 +201,41 @@ class CircleDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showInviteOptions(BuildContext context) {
+  void _showInviteOptions(BuildContext context, AppLocalizations l10n) {
+    final parentContext = context;
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16),
+            Padding(
+              padding: const EdgeInsets.all(16),
               child: Text(
-                'Invite to Circle',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                l10n.inviteToCircle,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.link),
-              title: const Text('Share invite link'),
-              subtitle: const Text('Anyone with the link can join'),
+              title: Text(l10n.shareInviteLink),
+              subtitle: Text(l10n.anyoneWithLinkCanJoin),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Generate and share invite link
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Invite link copied! (mock)')),
-                );
+                ScaffoldMessenger.of(
+                  parentContext,
+                ).showSnackBar(SnackBar(content: Text(l10n.inviteLinkCopied)));
               },
             ),
             ListTile(
               leading: const Icon(Icons.qr_code),
-              title: const Text('Show QR code'),
-              subtitle: const Text('Scan to join'),
+              title: Text(l10n.showQrCode),
+              subtitle: Text(l10n.scanToJoin),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Show QR code
               },
             ),
             const SizedBox(height: 16),
@@ -233,7 +249,11 @@ class CircleDetailScreen extends ConsumerWidget {
     BuildContext context,
     CircleMember member,
     bool isAdmin,
+    String? currentUserId,
+    AppLocalizations l10n,
   ) {
+    final displayName = member.resolvedName ?? l10n.unknownContact;
+    final initial = displayName.isNotEmpty ? displayName[0].toUpperCase() : '?';
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -243,18 +263,18 @@ class CircleDetailScreen extends ConsumerWidget {
             ListTile(
               leading: CircleAvatar(
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                child: Text(member.displayName[0].toUpperCase()),
+                child: Text(initial),
               ),
-              title: Text(member.displayName),
+              title: Text(displayName),
               subtitle: Text(
-                member.statusMessage ?? member.status.label,
+                member.statusMessage ?? getStatusLabel(member.status, l10n),
                 style: TextStyle(color: member.status.color),
               ),
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.message),
-              title: const Text('Send message'),
+              title: Text(l10n.sendMessage),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Navigate to DM
@@ -262,20 +282,22 @@ class CircleDetailScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.call),
-              title: const Text('Call'),
+              title: Text(l10n.call),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Initiate call
               },
             ),
-            if (isAdmin && member.userId != 'current-user')
+            if (isAdmin &&
+                currentUserId != null &&
+                member.userId != currentUserId)
               ListTile(
                 leading: Icon(
                   Icons.remove_circle_outline,
                   color: Theme.of(context).colorScheme.error,
                 ),
                 title: Text(
-                  'Remove from circle',
+                  l10n.removeFromCircle,
                   style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
                 onTap: () {
@@ -290,34 +312,38 @@ class CircleDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showLeaveConfirmation(BuildContext context, Circle circle) {
+  void _showLeaveConfirmation(
+    BuildContext context,
+    Circle circle,
+    AppLocalizations l10n,
+  ) {
+    final parentContext = context;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Leave Circle?'),
+        title: Text(l10n.leaveCircleQuestion),
         content: Text(
           circle.isAdmin
-              ? 'You are an admin. If you leave, you must transfer admin rights first or the circle will be deleted if you are the only admin.'
-              : 'Are you sure you want to leave "${circle.name}"?',
+              ? l10n.leaveCircleAdminWarning
+              : l10n.leaveCircleConfirmation(circle.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pop(context);
-              // TODO: Leave circle
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Left "${circle.name}" (mock)')),
+              ScaffoldMessenger.of(parentContext).showSnackBar(
+                SnackBar(content: Text(l10n.leftCircle(circle.name))),
               );
+              Navigator.pop(parentContext);
             },
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Leave'),
+            child: Text(l10n.leave),
           ),
         ],
       ),

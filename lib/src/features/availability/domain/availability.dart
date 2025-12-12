@@ -1,6 +1,11 @@
 import 'availability_status.dart';
 
-/// User's current availability state
+class _Undefined {
+  const _Undefined();
+}
+
+const _undefined = _Undefined();
+
 class Availability {
   final String userId;
   final AvailabilityStatus status;
@@ -21,29 +26,31 @@ class Availability {
   Availability copyWith({
     String? userId,
     AvailabilityStatus? status,
-    String? statusMessage,
-    DateTime? manualUntil,
+    Object? statusMessage = _undefined,
+    Object? manualUntil = _undefined,
     bool? autoStatus,
     DateTime? updatedAt,
   }) {
     return Availability(
       userId: userId ?? this.userId,
       status: status ?? this.status,
-      statusMessage: statusMessage ?? this.statusMessage,
-      manualUntil: manualUntil ?? this.manualUntil,
+      statusMessage: statusMessage == _undefined
+          ? this.statusMessage
+          : statusMessage as String?,
+      manualUntil: manualUntil == _undefined
+          ? this.manualUntil
+          : manualUntil as DateTime?,
       autoStatus: autoStatus ?? this.autoStatus,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  /// Check if manual status has expired
   bool get isManualStatusExpired {
     if (manualUntil == null) return false;
-    return DateTime.now().isAfter(manualUntil!);
+    return !DateTime.now().isBefore(manualUntil!);
   }
 }
 
-/// Duration options for setting availability
 enum AvailabilityDuration {
   indefinite,
   thirtyMinutes,
@@ -53,21 +60,6 @@ enum AvailabilityDuration {
 }
 
 extension AvailabilityDurationX on AvailabilityDuration {
-  String get label {
-    switch (this) {
-      case AvailabilityDuration.indefinite:
-        return 'Until I change it';
-      case AvailabilityDuration.thirtyMinutes:
-        return 'For 30 minutes';
-      case AvailabilityDuration.oneHour:
-        return 'For 1 hour';
-      case AvailabilityDuration.fourHours:
-        return 'For 4 hours';
-      case AvailabilityDuration.untilTomorrow:
-        return 'Until tomorrow';
-    }
-  }
-
   DateTime? get expiresAt {
     final now = DateTime.now();
     switch (this) {
@@ -80,9 +72,10 @@ extension AvailabilityDurationX on AvailabilityDuration {
       case AvailabilityDuration.fourHours:
         return now.add(const Duration(hours: 4));
       case AvailabilityDuration.untilTomorrow:
-        // Next day at 9 AM
-        final tomorrow = DateTime(now.year, now.month, now.day + 1, 9);
-        return tomorrow;
+        final todayAt9 = DateTime(now.year, now.month, now.day, 9);
+        return now.isBefore(todayAt9)
+            ? todayAt9
+            : todayAt9.add(const Duration(days: 1));
     }
   }
 }

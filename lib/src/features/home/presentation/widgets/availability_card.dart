@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/contact_with_availability.dart';
 import '../../../availability/domain/availability_status.dart';
 
@@ -19,6 +20,8 @@ class AvailabilityCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+    final displayName = contact.resolvedName ?? l10n.unknownContact;
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -41,7 +44,9 @@ class AvailabilityCard extends StatelessWidget {
                         : null,
                     child: contact.avatarUrl == null
                         ? Text(
-                            contact.displayName[0].toUpperCase(),
+                            displayName.isNotEmpty
+                                ? displayName[0].toUpperCase()
+                                : '?',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.w500,
@@ -61,7 +66,7 @@ class AvailabilityCard extends StatelessWidget {
 
               // Name
               Text(
-                contact.displayName,
+                displayName,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
@@ -94,14 +99,19 @@ class AvailabilityStatusBadge extends StatelessWidget {
   final AvailabilityStatus status;
   final double size;
 
+  /// Minimum size for the badge to ensure the icon remains readable
+  static const double minSize = 10.0;
+
   const AvailabilityStatusBadge({
     super.key,
     required this.status,
     this.size = 16,
-  });
+  }) : assert(size >= minSize, 'size must be at least $minSize');
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = (size - 6).clamp(4.0, double.infinity);
+
     return Container(
       width: size,
       height: size,
@@ -114,7 +124,7 @@ class AvailabilityStatusBadge extends StatelessWidget {
         ),
       ),
       child: status == AvailabilityStatus.sleeping
-          ? Icon(Icons.bedtime, size: size - 6, color: Colors.white)
+          ? Icon(Icons.bedtime, size: iconSize, color: Colors.white)
           : null,
     );
   }

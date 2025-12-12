@@ -3,12 +3,23 @@ import '../domain/circle.dart';
 import '../domain/circle_member.dart';
 import '../../availability/domain/availability_status.dart';
 
-/// Mock circles data provider
-final circlesProvider = Provider<List<Circle>>((ref) {
-  return _mockCircles;
-});
+class CirclesNotifier extends Notifier<List<Circle>> {
+  @override
+  List<Circle> build() => _mockCircles;
 
-/// Provider to get a specific circle by ID
+  Circle? getById(String circleId) {
+    try {
+      return state.firstWhere((c) => c.id == circleId);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+final circlesProvider = NotifierProvider<CirclesNotifier, List<Circle>>(
+  CirclesNotifier.new,
+);
+
 final circleByIdProvider = Provider.family<Circle?, String>((ref, circleId) {
   final circles = ref.watch(circlesProvider);
   try {
@@ -18,23 +29,40 @@ final circleByIdProvider = Provider.family<Circle?, String>((ref, circleId) {
   }
 });
 
-/// Provider to get members of a specific circle
+class CircleMembersNotifier extends Notifier<Map<String, List<CircleMember>>> {
+  @override
+  Map<String, List<CircleMember>> build() => _mockMembersByCircle;
+
+  List<CircleMember> getMembersForCircle(String circleId) {
+    return state[circleId] ?? [];
+  }
+
+  int getFreeCount(String circleId) {
+    final members = getMembersForCircle(circleId);
+    return members.where((m) => m.status == AvailabilityStatus.free).length;
+  }
+}
+
+final circleMembersNotifierProvider =
+    NotifierProvider<CircleMembersNotifier, Map<String, List<CircleMember>>>(
+      CircleMembersNotifier.new,
+    );
+
 final circleMembersProvider = Provider.family<List<CircleMember>, String>((
   ref,
   circleId,
 ) {
-  return _mockMembersByCircle[circleId] ?? [];
+  final membersByCircle = ref.watch(circleMembersNotifierProvider);
+  return membersByCircle[circleId] ?? [];
 });
 
-/// Provider to count free members in a circle
 final circleFreeCountProvider = Provider.family<int, String>((ref, circleId) {
   final members = ref.watch(circleMembersProvider(circleId));
   return members.where((m) => m.status == AvailabilityStatus.free).length;
 });
 
-// ============================================================================
-// Mock Data
-// ============================================================================
+// Fixed reference date for deterministic mock data timestamps
+final _mockBaseDate = DateTime.utc(2024, 1, 15, 12, 0, 0);
 
 final _mockCircles = [
   Circle(
@@ -45,8 +73,8 @@ final _mockCircles = [
     createdBy: 'current-user',
     myRole: MemberRole.admin,
     memberCount: 4,
-    createdAt: DateTime.now().subtract(const Duration(days: 90)),
-    updatedAt: DateTime.now(),
+    createdAt: _mockBaseDate.subtract(const Duration(days: 90)),
+    updatedAt: _mockBaseDate,
   ),
   Circle(
     id: 'circle-2',
@@ -56,8 +84,8 @@ final _mockCircles = [
     createdBy: 'user-alice',
     myRole: MemberRole.member,
     memberCount: 5,
-    createdAt: DateTime.now().subtract(const Duration(days: 60)),
-    updatedAt: DateTime.now(),
+    createdAt: _mockBaseDate.subtract(const Duration(days: 60)),
+    updatedAt: _mockBaseDate,
   ),
   Circle(
     id: 'circle-3',
@@ -67,8 +95,8 @@ final _mockCircles = [
     createdBy: 'current-user',
     myRole: MemberRole.admin,
     memberCount: 3,
-    createdAt: DateTime.now().subtract(const Duration(days: 30)),
-    updatedAt: DateTime.now(),
+    createdAt: _mockBaseDate.subtract(const Duration(days: 30)),
+    updatedAt: _mockBaseDate,
   ),
 ];
 
@@ -80,8 +108,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-mom',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 90)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 90)),
+      updatedAt: _mockBaseDate,
       name: 'Mom',
       avatarUrl: null,
       status: AvailabilityStatus.free,
@@ -93,8 +121,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-dad',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 90)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 90)),
+      updatedAt: _mockBaseDate,
       name: 'Dad',
       avatarUrl: null,
       status: AvailabilityStatus.away,
@@ -106,8 +134,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-sister',
       role: MemberRole.member,
       nickname: 'Sis',
-      joinedAt: DateTime.now().subtract(const Duration(days: 85)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 85)),
+      updatedAt: _mockBaseDate,
       name: 'Sarah',
       avatarUrl: null,
       status: AvailabilityStatus.busy,
@@ -119,8 +147,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'current-user',
       role: MemberRole.admin,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 90)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 90)),
+      updatedAt: _mockBaseDate,
       name: 'You',
       avatarUrl: null,
       status: AvailabilityStatus.free,
@@ -134,8 +162,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-alice',
       role: MemberRole.admin,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 60)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 60)),
+      updatedAt: _mockBaseDate,
       name: 'Alice',
       avatarUrl: null,
       status: AvailabilityStatus.free,
@@ -147,8 +175,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-bob',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 55)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 55)),
+      updatedAt: _mockBaseDate,
       name: 'Bob',
       avatarUrl: null,
       status: AvailabilityStatus.busy,
@@ -160,8 +188,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-charlie',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 50)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 50)),
+      updatedAt: _mockBaseDate,
       name: 'Charlie',
       avatarUrl: null,
       status: AvailabilityStatus.sleeping,
@@ -173,8 +201,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-diana',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 45)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 45)),
+      updatedAt: _mockBaseDate,
       name: 'Diana',
       avatarUrl: null,
       status: AvailabilityStatus.free,
@@ -186,8 +214,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'current-user',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 58)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 58)),
+      updatedAt: _mockBaseDate,
       name: 'You',
       avatarUrl: null,
       status: AvailabilityStatus.free,
@@ -201,8 +229,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-emma',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 28)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 28)),
+      updatedAt: _mockBaseDate,
       name: 'Emma',
       avatarUrl: null,
       status: AvailabilityStatus.doNotDisturb,
@@ -214,13 +242,13 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'user-frank',
       role: MemberRole.member,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 25)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 25)),
+      updatedAt: _mockBaseDate,
       name: 'Frank',
       avatarUrl: null,
       status: AvailabilityStatus.offline,
       statusMessage: null,
-      lastSeen: DateTime.now().subtract(const Duration(hours: 2)),
+      lastSeen: _mockBaseDate.subtract(const Duration(hours: 2)),
     ),
     CircleMember(
       id: 'member-12',
@@ -228,8 +256,8 @@ final _mockMembersByCircle = <String, List<CircleMember>>{
       userId: 'current-user',
       role: MemberRole.admin,
       nickname: null,
-      joinedAt: DateTime.now().subtract(const Duration(days: 30)),
-      updatedAt: DateTime.now(),
+      joinedAt: _mockBaseDate.subtract(const Duration(days: 30)),
+      updatedAt: _mockBaseDate,
       name: 'You',
       avatarUrl: null,
       status: AvailabilityStatus.free,

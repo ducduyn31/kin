@@ -4,6 +4,7 @@ import '../../../l10n/app_localizations.dart';
 import '../application/home_provider.dart';
 import '../domain/contact_with_availability.dart';
 import '../../availability/domain/availability_status.dart';
+import '../../availability/presentation/set_availability_sheet.dart';
 import 'widgets/availability_card.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -25,7 +26,7 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: Open your status settings
             },
-            tooltip: 'Your status',
+            tooltip: l10n.yourStatusTooltip,
           ),
         ],
       ),
@@ -38,7 +39,7 @@ class HomeScreen extends ConsumerWidget {
             child: Row(
               children: [
                 FilterChip(
-                  label: const Text('All'),
+                  label: Text(l10n.filterAll),
                   selected: statusFilter == null,
                   onSelected: (_) {
                     ref.read(statusFilterProvider.notifier).clearFilter();
@@ -46,7 +47,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
-                  label: Text('Free ($freeCount)'),
+                  label: Text(l10n.filterFreeCount(freeCount)),
                   selected: statusFilter == AvailabilityStatus.free,
                   onSelected: (_) {
                     ref
@@ -65,7 +66,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
-                  label: const Text('Busy'),
+                  label: Text(l10n.filterBusy),
                   selected: statusFilter == AvailabilityStatus.busy,
                   onSelected: (_) {
                     ref
@@ -84,7 +85,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(width: 8),
                 FilterChip(
-                  label: const Text('Away'),
+                  label: Text(l10n.filterAway),
                   selected: statusFilter == AvailabilityStatus.away,
                   onSelected: (_) {
                     ref
@@ -122,13 +123,15 @@ class HomeScreen extends ConsumerWidget {
                         const SizedBox(height: 16),
                         Text(
                           statusFilter != null
-                              ? 'No contacts ${statusFilter.label.toLowerCase()}'
-                              : 'No contacts yet',
+                              ? l10n.noContactsWithStatus(
+                                  getStatusLabelLowercase(statusFilter, l10n),
+                                )
+                              : l10n.noContactsYet,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Join a circle to see your contacts',
+                          l10n.joinCircleToSeeContacts,
                           style: Theme.of(context).textTheme.bodyMedium
                               ?.copyWith(
                                 color: Theme.of(
@@ -154,7 +157,7 @@ class HomeScreen extends ConsumerWidget {
                       return AvailabilityCard(
                         contact: contact,
                         onTap: () {
-                          _showQuickActions(context, contact);
+                          _showQuickActions(context, contact, l10n);
                         },
                       );
                     },
@@ -168,33 +171,41 @@ class HomeScreen extends ConsumerWidget {
   void _showQuickActions(
     BuildContext context,
     ContactWithAvailability contact,
+    AppLocalizations l10n,
   ) {
+    final displayName = contact.resolvedName ?? l10n.unknownContact;
+    final trimmedDisplayName = displayName.trim();
+    final initial = trimmedDisplayName.isNotEmpty
+        ? trimmedDisplayName[0].toUpperCase()
+        : '?';
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
           children: [
             ListTile(
               leading: CircleAvatar(
                 backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                 child: Text(
-                  contact.displayName[0].toUpperCase(),
+                  initial,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
               ),
-              title: Text(contact.displayName),
+              title: Text(displayName),
               subtitle: Text(
-                contact.statusMessage ?? contact.status.label,
+                contact.statusMessage ?? getStatusLabel(contact.status, l10n),
                 style: TextStyle(color: contact.status.color),
               ),
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.message),
-              title: const Text('Send message'),
+              title: Text(l10n.sendMessage),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Navigate to chat
@@ -202,7 +213,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.call),
-              title: const Text('Call'),
+              title: Text(l10n.call),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Initiate call
@@ -210,7 +221,7 @@ class HomeScreen extends ConsumerWidget {
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('View profile'),
+              title: Text(l10n.viewProfile),
               onTap: () {
                 Navigator.pop(context);
                 // TODO: Navigate to contact profile

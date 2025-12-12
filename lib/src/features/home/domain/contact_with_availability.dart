@@ -3,6 +3,8 @@ import '../../availability/domain/availability_status.dart';
 /// A contact with their availability info, aggregated across circles
 /// Used for the Home screen availability grid
 class ContactWithAvailability {
+  static const _undefined = Object();
+
   final String userId;
   final String name;
   final String? avatarUrl;
@@ -12,63 +14,55 @@ class ContactWithAvailability {
   final List<String> circleIds; // Which circles this contact is in
   final String? circleNickname; // Nickname from primary circle
 
-  const ContactWithAvailability({
+  ContactWithAvailability({
     required this.userId,
     required this.name,
     this.avatarUrl,
     this.status = AvailabilityStatus.offline,
     this.statusMessage,
     this.lastSeen,
-    this.circleIds = const [],
+    List<String> circleIds = const [],
     this.circleNickname,
-  });
+  }) : circleIds = List.unmodifiable(circleIds);
 
   ContactWithAvailability copyWith({
     String? userId,
     String? name,
-    String? avatarUrl,
+    Object? avatarUrl = _undefined,
     AvailabilityStatus? status,
-    String? statusMessage,
-    DateTime? lastSeen,
+    Object? statusMessage = _undefined,
+    Object? lastSeen = _undefined,
     List<String>? circleIds,
-    String? circleNickname,
+    Object? circleNickname = _undefined,
   }) {
     return ContactWithAvailability(
       userId: userId ?? this.userId,
       name: name ?? this.name,
-      avatarUrl: avatarUrl ?? this.avatarUrl,
+      avatarUrl: avatarUrl == _undefined
+          ? this.avatarUrl
+          : avatarUrl as String?,
       status: status ?? this.status,
-      statusMessage: statusMessage ?? this.statusMessage,
-      lastSeen: lastSeen ?? this.lastSeen,
+      statusMessage: statusMessage == _undefined
+          ? this.statusMessage
+          : statusMessage as String?,
+      lastSeen: lastSeen == _undefined ? this.lastSeen : lastSeen as DateTime?,
       circleIds: circleIds ?? this.circleIds,
-      circleNickname: circleNickname ?? this.circleNickname,
+      circleNickname: circleNickname == _undefined
+          ? this.circleNickname
+          : circleNickname as String?,
     );
   }
 
-  /// Display name (nickname if set, otherwise name)
-  String get displayName => circleNickname ?? name;
+  /// Returns the best available name (nickname > name), or null if none
+  String? get resolvedName {
+    final nickname = circleNickname?.trim();
+    if (nickname != null && nickname.isNotEmpty) return nickname;
+    final trimmedName = name.trim();
+    if (trimmedName.isNotEmpty) return trimmedName;
+    return null;
+  }
 
   bool get isOnline => status != AvailabilityStatus.offline;
 
   bool get isFreeToChat => status.isAvailableToChat;
-
-  /// Format last seen time for display
-  String? get lastSeenFormatted {
-    if (lastSeen == null) return null;
-
-    final now = DateTime.now();
-    final diff = now.difference(lastSeen!);
-
-    if (diff.inMinutes < 1) {
-      return 'Just now';
-    } else if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
-    } else if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
-    } else if (diff.inDays < 7) {
-      return '${diff.inDays}d ago';
-    } else {
-      return 'Long time ago';
-    }
-  }
 }

@@ -88,7 +88,7 @@ class ProfileScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'YOUR AVAILABILITY',
+              l10n.yourAvailability.toUpperCase(),
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -99,6 +99,9 @@ class ProfileScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: InkWell(
                 onTap: () {
                   SetAvailabilitySheet.show(
@@ -136,12 +139,13 @@ class ProfileScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user.status.label,
+                              getStatusLabel(user.status, l10n),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            if (user.statusMessage != null) ...[
+                            if (user.statusMessage?.trim().isNotEmpty ??
+                                false) ...[
                               const SizedBox(height: 2),
                               Text(
                                 user.statusMessage!,
@@ -163,11 +167,10 @@ class ProfileScreen extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
-          // Settings Section
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'SETTINGS',
+              l10n.settings.toUpperCase(),
               style: theme.textTheme.labelMedium?.copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w500,
@@ -182,8 +185,8 @@ class ProfileScreen extends ConsumerWidget {
                 children: [
                   _MenuTile(
                     icon: Icons.schedule,
-                    title: 'Availability Schedule',
-                    subtitle: 'Set recurring availability windows',
+                    title: l10n.availabilitySchedule,
+                    subtitle: l10n.availabilityScheduleSubtitle,
                     onTap: () {
                       // TODO: Navigate to availability schedule
                     },
@@ -198,7 +201,7 @@ class ProfileScreen extends ConsumerWidget {
                   _MenuTile(
                     icon: Icons.lock_outline,
                     title: l10n.privacy,
-                    subtitle: 'Control what circles can see',
+                    subtitle: l10n.privacySubtitle,
                     onTap: () {},
                   ),
                   const Divider(height: 1),

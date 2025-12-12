@@ -43,7 +43,6 @@
   "statusAvailable": "在线",
   "statusBusy": "忙碌",
   "statusAway": "离开",
-  "statusOffline": "离线",
   "appearOffline": "隐身",
 
   "notifications": "通知",

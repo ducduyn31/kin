@@ -200,11 +200,6 @@
     "description": "Away status label"
   },
 
-  "statusOffline": "Offline",
-  "@statusOffline": {
-    "description": "Offline status label"
-  },
-
   "appearOffline": "Appear Offline",
   "@appearOffline": {
     "description": "Appear offline option in profile"

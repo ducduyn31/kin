@@ -1,14 +1,15 @@
 import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
 
 import '../application/auth_provider.dart';
 import '../domain/auth_state.dart';
+import 'otp_verification_screen.dart';
+
+bool get _isApplePlatform => Platform.isIOS;
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -24,18 +25,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     child: CircularProgressIndicator(strokeWidth: 2),
   );
 
-  final _codeController = TextEditingController();
-
-  bool _isCodeSent = false;
+  bool _isSendingCode = false;
   String? _completePhoneNumber;
-  String? _displayPhoneNumber;
   bool _isPhoneValid = false;
-
-  @override
-  void dispose() {
-    _codeController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
 
                 // Apple login button (only on Apple devices)
-                if (_isAppleDevice) ...[
+                if (_isApplePlatform) ...[
                   const SizedBox(height: 12),
                   _SocialLoginButton(
                     onPressed: authState.isLoading
@@ -131,12 +123,46 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Phone number login
-                if (!_isCodeSent) ...[
-                  _buildPhoneInput(authState, colorScheme),
-                ] else ...[
-                  _buildCodeInput(authState, colorScheme),
-                ],
+                // Phone number input
+                IntlPhoneField(
+                  decoration: const InputDecoration(
+                    labelText: 'Phone Number',
+                    border: OutlineInputBorder(),
+                  ),
+                  initialCountryCode: _getInitialCountryCode(),
+                  disableLengthCheck: false,
+                  invalidNumberMessage: 'Invalid phone number',
+                  onChanged: (PhoneNumber phone) {
+                    bool isValid;
+                    try {
+                      isValid = phone.isValidNumber();
+                    } catch (_) {
+                      isValid = false;
+                    }
+                    setState(() {
+                      _completePhoneNumber = phone.completeNumber;
+                      _isPhoneValid = isValid;
+                    });
+                  },
+                  onCountryChanged: (country) {
+                    setState(() {
+                      _isPhoneValid = false;
+                    });
+                  },
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed:
+                      _isSendingCode || !_isPhoneValid || authState.isLoading
+                      ? null
+                      : _sendCode,
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                  ),
+                  child: _isSendingCode
+                      ? _loadingIndicator
+                      : const Text('Send Verification Code'),
+                ),
               ],
             ),
           ),
@@ -145,104 +171,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildPhoneInput(AuthState authState, ColorScheme colorScheme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        IntlPhoneField(
-          decoration: const InputDecoration(
-            labelText: 'Phone Number',
-            border: OutlineInputBorder(),
-          ),
-          initialCountryCode: _getInitialCountryCode(),
-          disableLengthCheck: false,
-          invalidNumberMessage: 'Invalid phone number',
-          onChanged: (PhoneNumber phone) {
-            setState(() {
-              _completePhoneNumber = phone.completeNumber;
-              _displayPhoneNumber = phone.completeNumber;
-              _isPhoneValid = phone.isValidNumber();
-            });
-          },
-          onCountryChanged: (country) {
-            setState(() {
-              _isPhoneValid = false;
-            });
-          },
-        ),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: authState.isLoading || !_isPhoneValid ? null : _sendCode,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: authState.isLoading
-              ? _loadingIndicator
-              : const Text('Send Verification Code'),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCodeInput(AuthState authState, ColorScheme colorScheme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          'Enter the verification code sent to $_displayPhoneNumber',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        TextFormField(
-          controller: _codeController,
-          decoration: const InputDecoration(
-            labelText: 'Verification Code',
-            hintText: '123456',
-            prefixIcon: Icon(Icons.lock_outlined),
-            border: OutlineInputBorder(),
-          ),
-          keyboardType: TextInputType.number,
-          textInputAction: TextInputAction.done,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(6),
-          ],
-          onFieldSubmitted: (_) {
-            if (!authState.isLoading) _verifyCode();
-          },
-        ),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: authState.isLoading ? null : _verifyCode,
-          style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
-          child: authState.isLoading
-              ? _loadingIndicator
-              : const Text('Verify Code'),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton(
-              onPressed: authState.isLoading ? null : _resendCode,
-              child: const Text('Resend Code'),
-            ),
-            const SizedBox(width: 16),
-            TextButton(
-              onPressed: authState.isLoading ? null : _resetPhoneInput,
-              child: const Text('Change Number'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   String _getInitialCountryCode() {
-    if (kIsWeb) return 'US';
-
-    // Try to get locale-based country code
     final locale = WidgetsBinding.instance.platformDispatcher.locale;
     final countryCode = locale.countryCode;
 
@@ -253,81 +182,38 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return 'US';
   }
 
-  void _resetPhoneInput() {
-    setState(() {
-      _isCodeSent = false;
-      _codeController.clear();
-      _completePhoneNumber = null;
-      _displayPhoneNumber = null;
-      _isPhoneValid = false;
-    });
-  }
-
   Future<void> _sendCode() async {
-    if (_completePhoneNumber == null || _completePhoneNumber!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your phone number')),
-      );
-      return;
-    }
-
-    if (!_isPhoneValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid phone number')),
-      );
-      return;
-    }
+    debugPrint('[LoginScreen] _sendCode called for: $_completePhoneNumber');
+    setState(() => _isSendingCode = true);
 
     final success = await ref
         .read(authProvider.notifier)
         .startPhoneLogin(phoneNumber: _completePhoneNumber!);
 
-    if (success && mounted) {
-      setState(() {
-        _isCodeSent = true;
-      });
+    debugPrint('[LoginScreen] _sendCode result: $success, mounted: $mounted');
+    if (!mounted) return;
+
+    setState(() => _isSendingCode = false);
+
+    if (success) {
+      debugPrint('[LoginScreen] Navigating to OTP screen');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('Verification code sent!')));
-    }
-  }
-
-  Future<void> _resendCode() async {
-    if (_completePhoneNumber == null) return;
-
-    final success = await ref
-        .read(authProvider.notifier)
-        .startPhoneLogin(phoneNumber: _completePhoneNumber!);
-
-    if (success && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              OtpVerificationScreen(phoneNumber: _completePhoneNumber!),
+        ),
+      );
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code resent!')),
+        SnackBar(
+          content: const Text('Failed to send verification code'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
       );
     }
-  }
-
-  Future<void> _verifyCode() async {
-    final code = _codeController.text.trim();
-    if (code.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the verification code')),
-      );
-      return;
-    }
-
-    if (_completePhoneNumber == null) return;
-
-    await ref
-        .read(authProvider.notifier)
-        .loginWithPhoneCode(
-          phoneNumber: _completePhoneNumber!,
-          verificationCode: code,
-        );
-  }
-
-  bool get _isAppleDevice {
-    if (kIsWeb) return false;
-    return Platform.isIOS || Platform.isMacOS;
   }
 }
 

@@ -27,4 +27,13 @@ abstract class Env {
 
   static bool get enableDebugLogging =>
       _enableDebugLogging.toLowerCase() == 'true';
+
+  @EnviedField(varName: 'POSTHOG_API_KEY', defaultValue: '')
+  static final String posthogApiKey = _Env.posthogApiKey;
+
+  @EnviedField(varName: 'POSTHOG_HOST', defaultValue: 'https://app.posthog.com')
+  static final String posthogHost = _Env.posthogHost;
+
+  static bool get isProduction => environment.toLowerCase() == 'production';
+  static bool get isDevelopment => !isProduction;
 }

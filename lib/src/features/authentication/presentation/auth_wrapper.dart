@@ -19,7 +19,10 @@ class AuthWrapper extends ConsumerWidget {
         body: Center(child: CircularProgressIndicator()),
       ),
       AuthStatus.authenticated => child,
-      AuthStatus.unauthenticated || AuthStatus.error => const LoginScreen(),
+      AuthStatus.unauthenticated || AuthStatus.error => Navigator(
+        onGenerateRoute: (_) =>
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+      ),
     };
   }
 }

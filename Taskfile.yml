@@ -143,6 +143,8 @@ tasks:
         APP_SCHEME=${APP_SCHEME}
         API_BASE_URL=${API_BASE_URL:-}
         ENABLE_DEBUG_LOGGING=false
+        POSTHOG_API_KEY=${POSTHOG_API_KEY:-}
+        POSTHOG_HOST=${POSTHOG_HOST:-https://app.posthog.com}
         EOF
 
   # Utilities

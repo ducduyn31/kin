@@ -15,6 +15,11 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - PostHog (3.36.0)
+  - posthog_flutter (0.0.1):
+    - Flutter
+    - FlutterMacOS
+    - PostHog (< 4.0.0, >= 3.32.0)
   - SimpleKeychain (1.2.0)
 
 DEPENDENCIES:
@@ -22,11 +27,13 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - posthog_flutter (from `.symlinks/plugins/posthog_flutter/ios`)
 
 SPEC REPOS:
   trunk:
     - Auth0
     - JWTDecode
+    - PostHog
     - SimpleKeychain
 
 EXTERNAL SOURCES:
@@ -38,6 +45,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  posthog_flutter:
+    :path: ".symlinks/plugins/posthog_flutter/ios"
 
 SPEC CHECKSUMS:
   Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
@@ -46,6 +55,8 @@ SPEC CHECKSUMS:
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
   JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
   path_provider_foundation: 0b743cbb62d8e47eab856f09262bb8c1ddcfe6ba
+  PostHog: 8e04df01d59971f1fd85d0273e18ba61076fef72
+  posthog_flutter: c7888a7df4a4eb0a6473c50da2e12520c33408c4
   SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
 
 PODFILE CHECKSUM: 758d98dfb359b80ab33b6c9978e1a5fc0a30f988

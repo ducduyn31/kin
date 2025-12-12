@@ -30,7 +30,11 @@ class OtpInputState extends State<OtpInput> {
   void initState() {
     super.initState();
     _controllers = List.generate(widget.length, (_) => TextEditingController());
-    _focusNodes = List.generate(widget.length, (_) => FocusNode());
+    _focusNodes = List.generate(widget.length, (index) {
+      final node = FocusNode();
+      node.onKeyEvent = (_, event) => _handleKeyEvent(index, event);
+      return node;
+    });
   }
 
   @override
@@ -51,6 +55,20 @@ class OtpInputState extends State<OtpInput> {
       controller.clear();
     }
     _focusNodes.first.requestFocus();
+  }
+
+  KeyEventResult _handleKeyEvent(int index, KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+    if (event.logicalKey == LogicalKeyboardKey.backspace) {
+      if (_controllers[index].text.isEmpty && index > 0) {
+        _controllers[index - 1].clear();
+        _focusNodes[index - 1].requestFocus();
+        _notifyChange();
+        return KeyEventResult.handled;
+      }
+    }
+    return KeyEventResult.ignored;
   }
 
   void _onChanged(int index, String value) {
@@ -95,18 +113,6 @@ class OtpInputState extends State<OtpInput> {
     }
   }
 
-  void _onKeyEvent(int index, KeyEvent event) {
-    if (event is! KeyDownEvent) return;
-
-    if (event.logicalKey == LogicalKeyboardKey.backspace) {
-      if (_controllers[index].text.isEmpty && index > 0) {
-        _controllers[index - 1].clear();
-        _focusNodes[index - 1].requestFocus();
-        _notifyChange();
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -119,44 +125,35 @@ class OtpInputState extends State<OtpInput> {
           child: SizedBox(
             width: 48,
             height: 56,
-            child: KeyboardListener(
+            child: TextField(
+              controller: _controllers[index],
               focusNode: _focusNodes[index],
-              onKeyEvent: (event) => _onKeyEvent(index, event),
-              child: TextField(
-                controller: _controllers[index],
-                focusNode: _focusNodes[index],
-                enabled: widget.enabled,
-                textAlign: TextAlign.center,
-                keyboardType: TextInputType.number,
-                maxLength: widget.length,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+              enabled: widget.enabled,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              maxLength: widget.length,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              decoration: InputDecoration(
+                counterText: '',
+                contentPadding: EdgeInsets.zero,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                decoration: InputDecoration(
-                  counterText: '',
-                  contentPadding: EdgeInsets.zero,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: colorScheme.primary,
-                      width: 2,
-                    ),
-                  ),
-                  filled: true,
-                  fillColor: widget.enabled
-                      ? colorScheme.surfaceContainerHighest.withValues(
-                          alpha: 0.5,
-                        )
-                      : colorScheme.surfaceContainerHighest.withValues(
-                          alpha: 0.3,
-                        ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: colorScheme.primary, width: 2),
                 ),
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                onChanged: (value) => _onChanged(index, value),
+                filled: true,
+                fillColor: widget.enabled
+                    ? colorScheme.surfaceContainerHighest.withValues(alpha: 0.5)
+                    : colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
               ),
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              onChanged: (value) => _onChanged(index, value),
             ),
           ),
         );

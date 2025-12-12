@@ -97,10 +97,22 @@ class OtpInputState extends State<OtpInput> {
   }
 
   void _fillCode(String code) {
+    // Clear all fields first to handle paste replacing existing content
+    for (final controller in _controllers) {
+      controller.clear();
+    }
+
+    // Fill with new code
     for (var i = 0; i < widget.length && i < code.length; i++) {
       _controllers[i].text = code[i];
     }
-    _focusNodes.last.unfocus();
+
+    // If partial paste, focus on next empty field; otherwise unfocus
+    if (code.length < widget.length) {
+      _focusNodes[code.length].requestFocus();
+    } else {
+      _focusNodes.last.unfocus();
+    }
     _notifyChange();
   }
 

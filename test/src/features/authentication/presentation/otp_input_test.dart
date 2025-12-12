@@ -120,6 +120,67 @@ void main() {
             expect(textField.controller?.text, '${i + 1}');
           }
         });
+
+        testWidgets(
+            'should fill first 5 fields and focus on 6th when pasting 5 digits',
+            (tester) async {
+          await tester.pumpWidget(buildTestWidget(length: 6));
+          await tester.tap(find.byType(TextField).first);
+          await tester.pump();
+          await tester.enterText(find.byType(TextField).first, '12345');
+          await tester.pump();
+
+          final textFields = find.byType(TextField);
+
+          // First 5 fields should have digits 1-5
+          for (var i = 0; i < 5; i++) {
+            final textField = tester.widget<TextField>(textFields.at(i));
+            expect(textField.controller?.text, '${i + 1}');
+          }
+
+          // 6th field should be empty
+          final sixthTextField = tester.widget<TextField>(textFields.at(5));
+          expect(sixthTextField.controller?.text, isEmpty);
+
+          // 6th field should have focus
+          expect(sixthTextField.focusNode?.hasFocus, true);
+        });
+
+        testWidgets(
+            'should replace all fields when pasting again from non-first field',
+            (tester) async {
+          await tester.pumpWidget(buildTestWidget(length: 6));
+          final textFields = find.byType(TextField);
+
+          // First paste: 5 digits -> fills boxes 1-5, focus on 6th
+          await tester.tap(textFields.first);
+          await tester.pump();
+          await tester.enterText(textFields.first, '12345');
+          await tester.pump();
+
+          // Verify 6th field has focus
+          final sixthTextField = tester.widget<TextField>(textFields.at(5));
+          expect(sixthTextField.focusNode?.hasFocus, true);
+
+          // Second paste: 4 digits from 6th box -> should replace all and focus on 5th
+          await tester.enterText(textFields.at(5), '6789');
+          await tester.pump();
+
+          // All fields should be replaced with new digits
+          for (var i = 0; i < 4; i++) {
+            final textField = tester.widget<TextField>(textFields.at(i));
+            expect(textField.controller?.text, '${i + 6}');
+          }
+
+          // 5th and 6th fields should be empty
+          final fifthTextField = tester.widget<TextField>(textFields.at(4));
+          expect(fifthTextField.controller?.text, isEmpty);
+          final sixthTextFieldAfter = tester.widget<TextField>(textFields.at(5));
+          expect(sixthTextFieldAfter.controller?.text, isEmpty);
+
+          // 5th field should have focus
+          expect(fifthTextField.focusNode?.hasFocus, true);
+        });
       });
 
       group('when non-numeric input is entered', () {

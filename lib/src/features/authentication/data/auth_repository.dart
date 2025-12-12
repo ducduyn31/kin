@@ -1,3 +1,5 @@
+import 'dart:io' show Platform;
+
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -93,11 +95,17 @@ class AuthRepository {
   }
 
   /// Logout and clear stored credentials
+  ///
+  /// On iOS, this only clears local tokens to avoid the system consent prompt
+  /// that ASWebAuthenticationSession requires for browser access. On all other
+  /// platforms, this performs a full federated logout.
   Future<void> logout() async {
-    try {
-      await _auth0.webAuthentication(scheme: Auth0Config.scheme).logout();
-    } catch (e) {
-      debugPrint('[AuthRepository] Web logout failed: $e');
+    if (!Platform.isIOS) {
+      try {
+        await _auth0.webAuthentication(scheme: Auth0Config.scheme).logout();
+      } catch (e) {
+        debugPrint('[AuthRepository] Web logout failed: $e');
+      }
     }
 
     await _clearRefreshToken();

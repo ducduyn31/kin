@@ -93,17 +93,47 @@ Voice and video calling functionality for connecting with friends and family.
 
 ## Development Notes
 
+This project uses [Taskfile](https://taskfile.dev/) for all development commands. **Always use `task` commands instead of running `flutter` or `dart` commands directly.**
+
+### Setup
+
+```bash
+task setup         # Install dependencies and create .env.local
+```
+
 ### Running the App
 
 ```bash
-flutter pub get
-flutter run
+task run           # Run app with local environment (handles env + code generation)
 ```
 
-### Useful Commands
+### Essential Commands
 
 ```bash
-flutter analyze    # Check for issues
-flutter test       # Run tests
-flutter build      # Build release
+task generate      # Generate l10n and build_runner code (REQUIRED after changing .arb files or models)
+task analyze       # Run Dart analyzer
+task test          # Run tests
+task format        # Format Dart code
+task format:check  # Check formatting without modifying
+task clean         # Clean build artifacts
 ```
+
+### Build Commands
+
+```bash
+# Staging
+task build:apk:staging   # Build APK for staging
+task build:ios:staging   # Build iOS for staging
+
+# Production
+task build:apk:prod      # Build APK for production
+task build:appbundle:prod # Build App Bundle for Play Store
+task build:ios:prod      # Build iOS for production
+```
+
+### Why Taskfile?
+
+- Ensures consistent environment setup (copies correct .env file)
+- Runs code generation automatically before builds
+- Validates prerequisites before running commands
+- Single source of truth for all development workflows

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kin/src/l10n/app_localizations.dart';
 import '../application/contacts_provider.dart';
 import '../domain/contact.dart';
 import '../../chat/presentation/chat_screen.dart';
@@ -26,6 +27,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   Widget build(BuildContext context) {
     final contacts = ref.watch(filteredContactsProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Group contacts by online status
     final onlineContacts = contacts
@@ -41,15 +43,15 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search contacts...',
+                decoration: InputDecoration(
+                  hintText: l10n.searchContacts,
                   border: InputBorder.none,
                 ),
                 onChanged: (value) {
                   ref.read(searchQueryProvider.notifier).setQuery(value);
                 },
               )
-            : const Text('Contacts'),
+            : Text(l10n.contacts),
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
@@ -83,7 +85,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _isSearching ? 'No contacts found' : 'No contacts yet',
+                    _isSearching ? l10n.noContactsFound : l10n.noContactsYet,
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: theme.colorScheme.outline,
                     ),
@@ -97,7 +99,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(
-                      'ONLINE - ${onlineContacts.length}',
+                      l10n.onlineCount(onlineContacts.length),
                       style: TextStyle(
                         color: theme.colorScheme.primary,
                         fontSize: 12,
@@ -118,7 +120,7 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
                     child: Text(
-                      'OFFLINE - ${offlineContacts.length}',
+                      l10n.offlineCount(offlineContacts.length),
                       style: TextStyle(
                         color: theme.colorScheme.outline,
                         fontSize: 12,
@@ -150,9 +152,10 @@ class _ContactsScreenState extends ConsumerState<ContactsScreen> {
   }
 
   void _startCall(Contact contact) {
+    final l10n = AppLocalizations.of(context)!;
     // TODO: Implement calling
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('Calling ${contact.name}...')));
+    ).showSnackBar(SnackBar(content: Text(l10n.callingContact(contact.name))));
   }
 }

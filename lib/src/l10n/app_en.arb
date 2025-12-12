@@ -1,0 +1,247 @@
+{
+  "@@locale": "en",
+
+  "appName": "Kin",
+  "@appName": {
+    "description": "The application name"
+  },
+
+  "appTagline": "Stay connected with friends & family",
+  "@appTagline": {
+    "description": "The app tagline shown on login screen"
+  },
+
+  "continueWithGoogle": "Continue with Google",
+  "@continueWithGoogle": {
+    "description": "Google login button text"
+  },
+
+  "continueWithApple": "Continue with Apple",
+  "@continueWithApple": {
+    "description": "Apple login button text"
+  },
+
+  "or": "or",
+  "@or": {
+    "description": "Divider text between login options"
+  },
+
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number input label"
+  },
+
+  "invalidPhoneNumber": "Invalid phone number",
+  "@invalidPhoneNumber": {
+    "description": "Invalid phone number error message"
+  },
+
+  "sendVerificationCode": "Send Verification Code",
+  "@sendVerificationCode": {
+    "description": "Button to send verification code"
+  },
+
+  "enterVerificationCodeSentTo": "Enter the verification code sent to {phoneNumber}",
+  "@enterVerificationCodeSentTo": {
+    "description": "Instruction text for verification code input",
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String",
+        "example": "+1234567890"
+      }
+    }
+  },
+
+  "verificationCode": "Verification Code",
+  "@verificationCode": {
+    "description": "Verification code input label"
+  },
+
+  "verifyCode": "Verify Code",
+  "@verifyCode": {
+    "description": "Button to verify code"
+  },
+
+  "resendCode": "Resend Code",
+  "@resendCode": {
+    "description": "Button to resend verification code"
+  },
+
+  "changeNumber": "Change Number",
+  "@changeNumber": {
+    "description": "Button to change phone number"
+  },
+
+  "pleaseEnterPhoneNumber": "Please enter your phone number",
+  "@pleaseEnterPhoneNumber": {
+    "description": "Error message when phone number is empty"
+  },
+
+  "pleaseEnterValidPhoneNumber": "Please enter a valid phone number",
+  "@pleaseEnterValidPhoneNumber": {
+    "description": "Error message when phone number is invalid"
+  },
+
+  "verificationCodeSent": "Verification code sent!",
+  "@verificationCodeSent": {
+    "description": "Success message when code is sent"
+  },
+
+  "verificationCodeResent": "Verification code resent!",
+  "@verificationCodeResent": {
+    "description": "Success message when code is resent"
+  },
+
+  "pleaseEnterVerificationCode": "Please enter the verification code",
+  "@pleaseEnterVerificationCode": {
+    "description": "Error message when verification code is empty"
+  },
+
+  "chats": "Chats",
+  "@chats": {
+    "description": "Chats tab label and screen title"
+  },
+
+  "contacts": "Contacts",
+  "@contacts": {
+    "description": "Contacts tab label and screen title"
+  },
+
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile tab label and screen title"
+  },
+
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Empty state title for conversations"
+  },
+
+  "startChatWithFriend": "Start a chat with a friend!",
+  "@startChatWithFriend": {
+    "description": "Empty state subtitle for conversations"
+  },
+
+  "searchContacts": "Search contacts...",
+  "@searchContacts": {
+    "description": "Search contacts placeholder"
+  },
+
+  "noContactsFound": "No contacts found",
+  "@noContactsFound": {
+    "description": "Empty state when no contacts match search"
+  },
+
+  "noContactsYet": "No contacts yet",
+  "@noContactsYet": {
+    "description": "Empty state when no contacts exist"
+  },
+
+  "onlineCount": "ONLINE - {count}",
+  "@onlineCount": {
+    "description": "Online contacts section header",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "offlineCount": "OFFLINE - {count}",
+  "@offlineCount": {
+    "description": "Offline contacts section header",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "callingContact": "Calling {name}...",
+  "@callingContact": {
+    "description": "Snackbar message when calling a contact",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "John"
+      }
+    }
+  },
+
+  "online": "Online",
+  "@online": {
+    "description": "Online status text"
+  },
+
+  "noMessagesYet": "No messages yet.\nSend a message to start the conversation!",
+  "@noMessagesYet": {
+    "description": "Empty state for chat screen"
+  },
+
+  "availability": "Availability",
+  "@availability": {
+    "description": "Availability section title in profile"
+  },
+
+  "statusAvailable": "Available",
+  "@statusAvailable": {
+    "description": "Available status label"
+  },
+
+  "statusBusy": "Busy",
+  "@statusBusy": {
+    "description": "Busy status label"
+  },
+
+  "statusAway": "Away",
+  "@statusAway": {
+    "description": "Away status label"
+  },
+
+  "appearOffline": "Appear Offline",
+  "@appearOffline": {
+    "description": "Appear offline option in profile"
+  },
+
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications menu item"
+  },
+
+  "privacy": "Privacy",
+  "@privacy": {
+    "description": "Privacy menu item"
+  },
+
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Appearance menu item"
+  },
+
+  "helpAndSupport": "Help & Support",
+  "@helpAndSupport": {
+    "description": "Help & Support menu item"
+  },
+
+  "logOut": "Log Out",
+  "@logOut": {
+    "description": "Log out button text"
+  },
+
+  "logOutConfirmation": "Are you sure you want to log out?",
+  "@logOutConfirmation": {
+    "description": "Log out confirmation dialog message"
+  },
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+
+  "failedToSendVerificationCode": "Failed to send verification code",
+  "@failedToSendVerificationCode": {
+    "description": "Error message when verification code fails to send"
+  }
+}

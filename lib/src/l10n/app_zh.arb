@@ -1,0 +1,57 @@
+{
+  "@@locale": "zh",
+
+  "appName": "Kin",
+  "appTagline": "与亲朋好友保持联系",
+
+  "continueWithGoogle": "使用 Google 继续",
+  "continueWithApple": "使用 Apple 继续",
+  "or": "或",
+
+  "phoneNumber": "手机号码",
+  "invalidPhoneNumber": "手机号码无效",
+  "sendVerificationCode": "发送验证码",
+  "enterVerificationCodeSentTo": "输入发送到 {phoneNumber} 的验证码",
+  "verificationCode": "验证码",
+  "verifyCode": "验证",
+  "resendCode": "重新发送",
+  "changeNumber": "更换号码",
+  "pleaseEnterPhoneNumber": "请输入手机号码",
+  "pleaseEnterValidPhoneNumber": "请输入有效的手机号码",
+  "verificationCodeSent": "验证码已发送！",
+  "verificationCodeResent": "验证码已重新发送！",
+  "pleaseEnterVerificationCode": "请输入验证码",
+
+  "chats": "聊天",
+  "contacts": "联系人",
+  "profile": "个人资料",
+
+  "noConversationsYet": "暂无对话",
+  "startChatWithFriend": "开始与朋友聊天吧！",
+
+  "searchContacts": "搜索联系人...",
+  "noContactsFound": "未找到联系人",
+  "noContactsYet": "暂无联系人",
+  "onlineCount": "在线 - {count}",
+  "offlineCount": "离线 - {count}",
+  "callingContact": "正在呼叫 {name}...",
+
+  "online": "在线",
+  "noMessagesYet": "暂无消息。\n发送消息开始对话吧！",
+
+  "availability": "在线状态",
+  "statusAvailable": "在线",
+  "statusBusy": "忙碌",
+  "statusAway": "离开",
+  "appearOffline": "隐身",
+
+  "notifications": "通知",
+  "privacy": "隐私",
+  "appearance": "外观",
+  "helpAndSupport": "帮助与支持",
+
+  "logOut": "退出登录",
+  "logOutConfirmation": "确定要退出登录吗？",
+  "cancel": "取消",
+  "failedToSendVerificationCode": "验证码发送失败"
+}

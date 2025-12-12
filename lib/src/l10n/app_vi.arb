@@ -1,0 +1,57 @@
+{
+  "@@locale": "vi",
+
+  "appName": "Kin",
+  "appTagline": "Kết nối với bạn bè & gia đình",
+
+  "continueWithGoogle": "Tiếp tục với Google",
+  "continueWithApple": "Tiếp tục với Apple",
+  "or": "hoặc",
+
+  "phoneNumber": "Số điện thoại",
+  "invalidPhoneNumber": "Số điện thoại không hợp lệ",
+  "sendVerificationCode": "Gửi mã xác nhận",
+  "enterVerificationCodeSentTo": "Nhập mã xác nhận đã gửi đến {phoneNumber}",
+  "verificationCode": "Mã xác nhận",
+  "verifyCode": "Xác nhận",
+  "resendCode": "Gửi lại mã",
+  "changeNumber": "Đổi số",
+  "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
+  "pleaseEnterValidPhoneNumber": "Vui lòng nhập số điện thoại hợp lệ",
+  "verificationCodeSent": "Đã gửi mã xác nhận!",
+  "verificationCodeResent": "Đã gửi lại mã xác nhận!",
+  "pleaseEnterVerificationCode": "Vui lòng nhập mã xác nhận",
+
+  "chats": "Tin nhắn",
+  "contacts": "Danh bạ",
+  "profile": "Hồ sơ",
+
+  "noConversationsYet": "Chưa có cuộc trò chuyện",
+  "startChatWithFriend": "Bắt đầu trò chuyện với bạn bè!",
+
+  "searchContacts": "Tìm kiếm liên hệ...",
+  "noContactsFound": "Không tìm thấy liên hệ",
+  "noContactsYet": "Chưa có liên hệ",
+  "onlineCount": "TRỰC TUYẾN - {count}",
+  "offlineCount": "NGOẠI TUYẾN - {count}",
+  "callingContact": "Đang gọi {name}...",
+
+  "online": "Trực tuyến",
+  "noMessagesYet": "Chưa có tin nhắn.\nGửi tin nhắn để bắt đầu cuộc trò chuyện!",
+
+  "availability": "Trạng thái",
+  "statusAvailable": "Có mặt",
+  "statusBusy": "Bận",
+  "statusAway": "Vắng mặt",
+  "appearOffline": "Ẩn trạng thái",
+
+  "notifications": "Thông báo",
+  "privacy": "Quyền riêng tư",
+  "appearance": "Giao diện",
+  "helpAndSupport": "Trợ giúp & Hỗ trợ",
+
+  "logOut": "Đăng xuất",
+  "logOutConfirmation": "Bạn có chắc chắn muốn đăng xuất?",
+  "cancel": "Hủy",
+  "failedToSendVerificationCode": "Không thể gửi mã xác nhận"
+}

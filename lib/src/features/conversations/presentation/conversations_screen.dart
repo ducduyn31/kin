@@ -74,12 +74,6 @@ class ConversationsScreen extends ConsumerWidget {
                 );
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // TODO: Start new conversation
-        },
-        child: const Icon(Icons.edit),
-      ),
     );
   }
 }

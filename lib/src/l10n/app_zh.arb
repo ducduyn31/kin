@@ -53,5 +53,8 @@
   "logOut": "退出登录",
   "logOutConfirmation": "确定要退出登录吗？",
   "cancel": "取消",
-  "failedToSendVerificationCode": "验证码发送失败"
+  "failedToSendVerificationCode": "验证码发送失败",
+
+  "home": "主页",
+  "circles": "圈子"
 }

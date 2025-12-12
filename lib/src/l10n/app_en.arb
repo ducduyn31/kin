@@ -243,5 +243,15 @@
   "failedToSendVerificationCode": "Failed to send verification code",
   "@failedToSendVerificationCode": {
     "description": "Error message when verification code fails to send"
+  },
+
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+
+  "circles": "Circles",
+  "@circles": {
+    "description": "Circles tab label and screen title"
   }
 }

@@ -53,5 +53,8 @@
   "logOut": "Đăng xuất",
   "logOutConfirmation": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-  "failedToSendVerificationCode": "Không thể gửi mã xác nhận"
+  "failedToSendVerificationCode": "Không thể gửi mã xác nhận",
+
+  "home": "Trang chủ",
+  "circles": "Nhóm"
 }

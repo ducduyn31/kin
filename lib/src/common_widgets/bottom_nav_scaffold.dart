@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kin/src/l10n/app_localizations.dart';
+import '../features/home/presentation/home_screen.dart';
 import '../features/conversations/presentation/conversations_screen.dart';
-import '../features/contacts/presentation/contacts_screen.dart';
+import '../features/circles/presentation/circles_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 
 class BottomNavScaffold extends StatefulWidget {
@@ -23,8 +24,9 @@ class _BottomNavScaffoldState extends State<BottomNavScaffold> {
   }
 
   final List<Widget> _screens = const [
+    HomeScreen(),
     ConversationsScreen(),
-    ContactsScreen(),
+    CirclesScreen(),
     ProfileScreen(),
   ];
 
@@ -43,14 +45,19 @@ class _BottomNavScaffoldState extends State<BottomNavScaffold> {
         },
         destinations: [
           NavigationDestination(
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: l10n.home,
+          ),
+          NavigationDestination(
             icon: const Icon(Icons.chat_bubble_outline),
             selectedIcon: const Icon(Icons.chat_bubble),
             label: l10n.chats,
           ),
           NavigationDestination(
-            icon: const Icon(Icons.people_outline),
-            selectedIcon: const Icon(Icons.people),
-            label: l10n.contacts,
+            icon: const Icon(Icons.groups_outlined),
+            selectedIcon: const Icon(Icons.groups),
+            label: l10n.circles,
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outline),

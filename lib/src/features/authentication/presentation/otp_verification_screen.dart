@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../application/auth_provider.dart';
 import '../domain/auth_state.dart';
 import 'otp_input.dart';
@@ -31,6 +32,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     ref.listen<AuthState>(authProvider, (previous, next) {
       if (next.status == AuthStatus.error && next.errorMessage != null) {
@@ -45,7 +47,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Verify Code')),
+      appBar: AppBar(title: Text(l10n.verifyCode)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -53,7 +55,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Enter verification code',
+                l10n.verificationCode,
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -61,7 +63,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter the 6-digit code sent to\n${widget.phoneNumber}',
+                l10n.enterVerificationCodeSentTo(widget.phoneNumber),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -92,7 +94,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                 ),
                 child: authState.isLoading
                     ? _loadingIndicator
-                    : const Text('Verify Code'),
+                    : Text(l10n.verifyCode),
               ),
               const SizedBox(height: 24),
               Center(
@@ -106,7 +108,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                           width: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Resend Code'),
+                      : Text(l10n.resendCode),
                 ),
               ),
             ],
@@ -117,12 +119,12 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   }
 
   Future<void> _verifyCode() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_otpCode.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter the full verification code'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseEnterVerificationCode)));
       return;
     }
 
@@ -144,6 +146,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isResending = false);
 
     if (success) {
@@ -151,13 +154,13 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       setState(() {
         _otpCode = '';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification code resent!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.verificationCodeResent)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Failed to resend verification code'),
+          content: Text(l10n.failedToSendVerificationCode),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

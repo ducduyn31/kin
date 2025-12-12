@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/ducduyn31/kin/compare/v1.2.0...v1.3.0) (2025-12-12)
+
+
+### Features
+
+* Add internationalization support to app ([#14](https://github.com/ducduyn31/kin/issues/14)) ([e189ac4](https://github.com/ducduyn31/kin/commit/e189ac4e2788b41af491cff4d69aea56bb54a6bc))
+
+
+### Bug Fixes
+
+* **auth:** fix the sms login and add OTP screen ([#15](https://github.com/ducduyn31/kin/issues/15)) ([69c5479](https://github.com/ducduyn31/kin/commit/69c5479d048f09d5848e252b71121962ffd7e38a))
+
 ## [1.2.0](https://github.com/ducduyn31/kin/compare/v1.1.0...v1.2.0) (2025-12-07)
 
 

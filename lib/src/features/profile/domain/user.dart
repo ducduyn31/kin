@@ -1,4 +1,4 @@
-import '../../contacts/domain/contact.dart';
+import '../../availability/domain/availability_status.dart';
 
 class User {
   final String id;
@@ -7,6 +7,7 @@ class User {
   final String avatarUrl;
   final AvailabilityStatus status;
   final String? statusMessage;
+  final DateTime? statusExpiresAt;
 
   const User({
     required this.id,
@@ -15,6 +16,7 @@ class User {
     required this.avatarUrl,
     required this.status,
     this.statusMessage,
+    this.statusExpiresAt,
   });
 
   User copyWith({
@@ -23,6 +25,7 @@ class User {
     String? avatarUrl,
     AvailabilityStatus? status,
     Object? statusMessage = _sentinel,
+    Object? statusExpiresAt = _sentinel,
   }) {
     return User(
       id: id,
@@ -33,6 +36,9 @@ class User {
       statusMessage: statusMessage == _sentinel
           ? this.statusMessage
           : statusMessage as String?,
+      statusExpiresAt: statusExpiresAt == _sentinel
+          ? this.statusExpiresAt
+          : statusExpiresAt as DateTime?,
     );
   }
 }

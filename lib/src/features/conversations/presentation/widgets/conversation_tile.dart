@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/conversation.dart';
+import '../../../home/presentation/widgets/availability_card.dart';
 
 class ConversationTile extends StatelessWidget {
   final Conversation conversation;
@@ -30,49 +31,85 @@ class ConversationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final hasUnread = conversation.unreadCount > 0;
+    final isCircle = conversation.isCircleChat;
 
     return ListTile(
       onTap: onTap,
       leading: Stack(
         children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: theme.colorScheme.primaryContainer,
-            child: Text(
-              conversation.contactName.isNotEmpty
-                  ? conversation.contactName[0].toUpperCase()
-                  : '?',
-              style: TextStyle(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+          if (isCircle)
+            // Circle group avatar
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.secondaryContainer,
+                borderRadius: BorderRadius.circular(12),
               ),
+              child: Icon(
+                Icons.groups,
+                color: theme.colorScheme.onSecondaryContainer,
+                size: 28,
+              ),
+            )
+          else
+            // Direct message avatar
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: theme.colorScheme.primaryContainer,
+              backgroundImage:
+                  conversation.avatarUrl != null &&
+                      conversation.avatarUrl!.isNotEmpty
+                  ? NetworkImage(conversation.avatarUrl!)
+                  : null,
+              child:
+                  conversation.avatarUrl == null ||
+                      conversation.avatarUrl!.isEmpty
+                  ? Text(
+                      conversation.displayName.isNotEmpty
+                          ? conversation.displayName[0].toUpperCase()
+                          : '?',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    )
+                  : null,
             ),
-          ),
-          if (conversation.isOnline)
+          // Status badge for direct messages
+          if (!isCircle && conversation.contactStatus != null)
             Positioned(
               right: 0,
               bottom: 0,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: theme.colorScheme.surface,
-                    width: 2,
-                  ),
-                ),
+              child: AvailabilityStatusBadge(
+                status: conversation.contactStatus!,
+                size: 16,
               ),
             ),
         ],
       ),
-      title: Text(
-        conversation.contactName,
-        style: TextStyle(
-          fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
-        ),
+      title: Row(
+        children: [
+          Flexible(
+            child: Text(
+              conversation.displayName,
+              style: TextStyle(
+                fontWeight: hasUnread ? FontWeight.bold : FontWeight.normal,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (isCircle && conversation.memberCount != null) ...[
+            const SizedBox(width: 4),
+            Text(
+              '(${conversation.memberCount})',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
       ),
       subtitle: Text(
         conversation.lastMessage,

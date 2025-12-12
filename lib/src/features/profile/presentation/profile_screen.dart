@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kin/src/l10n/app_localizations.dart';
 import '../application/user_provider.dart';
 import '../../authentication/application/auth_provider.dart';
-import '../../contacts/domain/contact.dart';
+import '../../availability/domain/availability_status.dart';
+import '../../availability/presentation/set_availability_sheet.dart';
+import '../../home/presentation/widgets/availability_card.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -12,6 +14,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider);
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -37,11 +40,11 @@ class ProfileScreen extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundColor: colorScheme.primaryContainer,
                       child: Text(
                         user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                         style: TextStyle(
-                          color: theme.colorScheme.onPrimaryContainer,
+                          color: colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.bold,
                           fontSize: 36,
                         ),
@@ -53,17 +56,12 @@ class ProfileScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.all(4),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surface,
+                          color: colorScheme.surface,
                           shape: BoxShape.circle,
                         ),
-                        child: CircleAvatar(
-                          radius: 12,
-                          backgroundColor: user.status.color,
-                          child: const Icon(
-                            Icons.check,
-                            size: 12,
-                            color: Colors.white,
-                          ),
+                        child: AvailabilityStatusBadge(
+                          status: user.status,
+                          size: 24,
                         ),
                       ),
                     ),
@@ -79,68 +77,121 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(height: 4),
                 Text(
                   user.email,
-                  style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 32),
-          // Status Section
+
+          // Your Availability Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l10n.yourAvailability.toUpperCase(),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.availability,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: InkWell(
+                onTap: () {
+                  SetAvailabilitySheet.show(
+                    context,
+                    currentStatus: user.status,
+                    currentStatusMessage: user.statusMessage,
+                    onSave: (status, message, duration) {
+                      ref
+                          .read(userProvider.notifier)
+                          .setAvailability(status, message, duration);
+                    },
+                  );
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: user.status.color.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          user.status.icon,
+                          color: user.status.color,
+                          size: 24,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    _StatusOption(
-                      status: AvailabilityStatus.available,
-                      currentStatus: user.status,
-                      onTap: () => ref
-                          .read(userProvider.notifier)
-                          .updateStatus(AvailabilityStatus.available),
-                    ),
-                    _StatusOption(
-                      status: AvailabilityStatus.busy,
-                      currentStatus: user.status,
-                      onTap: () => ref
-                          .read(userProvider.notifier)
-                          .updateStatus(AvailabilityStatus.busy),
-                    ),
-                    _StatusOption(
-                      status: AvailabilityStatus.away,
-                      currentStatus: user.status,
-                      onTap: () => ref
-                          .read(userProvider.notifier)
-                          .updateStatus(AvailabilityStatus.away),
-                    ),
-                    _StatusOption(
-                      status: AvailabilityStatus.offline,
-                      currentStatus: user.status,
-                      onTap: () => ref
-                          .read(userProvider.notifier)
-                          .updateStatus(AvailabilityStatus.offline),
-                    ),
-                  ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              getStatusLabel(user.status, l10n),
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            if (user.statusMessage?.trim().isNotEmpty ??
+                                false) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                user.statusMessage!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.edit, color: colorScheme.onSurfaceVariant),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          // Menu Items
+
+          const SizedBox(height: 24),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              l10n.settings.toUpperCase(),
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
               child: Column(
                 children: [
+                  _MenuTile(
+                    icon: Icons.schedule,
+                    title: l10n.availabilitySchedule,
+                    subtitle: l10n.availabilityScheduleSubtitle,
+                    onTap: () {
+                      // TODO: Navigate to availability schedule
+                    },
+                  ),
+                  const Divider(height: 1),
                   _MenuTile(
                     icon: Icons.notifications_outlined,
                     title: l10n.notifications,
@@ -150,6 +201,7 @@ class ProfileScreen extends ConsumerWidget {
                   _MenuTile(
                     icon: Icons.lock_outline,
                     title: l10n.privacy,
+                    subtitle: l10n.privacySubtitle,
                     onTap: () {},
                   ),
                   const Divider(height: 1),
@@ -175,8 +227,8 @@ class ProfileScreen extends ConsumerWidget {
               child: _MenuTile(
                 icon: Icons.logout,
                 title: l10n.logOut,
-                iconColor: theme.colorScheme.error,
-                textColor: theme.colorScheme.error,
+                iconColor: colorScheme.error,
+                textColor: colorScheme.error,
                 onTap: () => _showLogoutDialog(context, ref),
               ),
             ),
@@ -212,55 +264,10 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _StatusOption extends StatelessWidget {
-  final AvailabilityStatus status;
-  final AvailabilityStatus currentStatus;
-  final VoidCallback onTap;
-
-  const _StatusOption({
-    required this.status,
-    required this.currentStatus,
-    required this.onTap,
-  });
-
-  String _getStatusText(BuildContext context, AvailabilityStatus status) {
-    final l10n = AppLocalizations.of(context)!;
-    switch (status) {
-      case AvailabilityStatus.available:
-        return l10n.statusAvailable;
-      case AvailabilityStatus.busy:
-        return l10n.statusBusy;
-      case AvailabilityStatus.away:
-        return l10n.statusAway;
-      case AvailabilityStatus.offline:
-        return l10n.appearOffline;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = status == currentStatus;
-    final theme = Theme.of(context);
-
-    return ListTile(
-      onTap: onTap,
-      leading: Container(
-        width: 12,
-        height: 12,
-        decoration: BoxDecoration(color: status.color, shape: BoxShape.circle),
-      ),
-      title: Text(_getStatusText(context, status)),
-      trailing: isSelected
-          ? Icon(Icons.check, color: theme.colorScheme.primary)
-          : null,
-      contentPadding: EdgeInsets.zero,
-    );
-  }
-}
-
 class _MenuTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   final Color? iconColor;
   final Color? textColor;
@@ -268,6 +275,7 @@ class _MenuTile extends StatelessWidget {
   const _MenuTile({
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.onTap,
     this.iconColor,
     this.textColor,
@@ -278,6 +286,7 @@ class _MenuTile extends StatelessWidget {
     return ListTile(
       leading: Icon(icon, color: iconColor),
       title: Text(title, style: TextStyle(color: textColor)),
+      subtitle: subtitle != null ? Text(subtitle!) : null,
       trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );

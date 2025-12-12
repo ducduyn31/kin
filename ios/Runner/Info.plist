@@ -57,6 +57,16 @@
 				<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleURLName</key>
+			<string>kin-deeplink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kin</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>

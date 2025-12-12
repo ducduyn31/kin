@@ -243,5 +243,492 @@
   "failedToSendVerificationCode": "Failed to send verification code",
   "@failedToSendVerificationCode": {
     "description": "Error message when verification code fails to send"
+  },
+
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+
+  "circles": "Circles",
+  "@circles": {
+    "description": "Circles tab label and screen title"
+  },
+
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings section header"
+  },
+
+  "availabilitySchedule": "Availability Schedule",
+  "@availabilitySchedule": {
+    "description": "Availability schedule menu item"
+  },
+
+  "availabilityScheduleSubtitle": "Set recurring availability windows",
+  "@availabilityScheduleSubtitle": {
+    "description": "Availability schedule menu item subtitle"
+  },
+
+  "privacySubtitle": "Control what circles can see",
+  "@privacySubtitle": {
+    "description": "Privacy menu item subtitle"
+  },
+
+  "availabilityDurationIndefinite": "Until I change it",
+  "@availabilityDurationIndefinite": {
+    "description": "Duration option for indefinite availability"
+  },
+
+  "availabilityDurationThirtyMinutes": "For 30 minutes",
+  "@availabilityDurationThirtyMinutes": {
+    "description": "Duration option for 30 minutes"
+  },
+
+  "availabilityDurationOneHour": "For 1 hour",
+  "@availabilityDurationOneHour": {
+    "description": "Duration option for 1 hour"
+  },
+
+  "availabilityDurationFourHours": "For 4 hours",
+  "@availabilityDurationFourHours": {
+    "description": "Duration option for 4 hours"
+  },
+
+  "availabilityDurationUntilTomorrow": "Until tomorrow",
+  "@availabilityDurationUntilTomorrow": {
+    "description": "Duration option until tomorrow"
+  },
+
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Filter chip label for showing all contacts"
+  },
+
+  "filterFreeCount": "Free ({count})",
+  "@filterFreeCount": {
+    "description": "Filter chip label for free contacts with count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "filterBusy": "Busy",
+  "@filterBusy": {
+    "description": "Filter chip label for busy contacts"
+  },
+
+  "filterAway": "Away",
+  "@filterAway": {
+    "description": "Filter chip label for away contacts"
+  },
+
+  "yourStatusTooltip": "Your status",
+  "@yourStatusTooltip": {
+    "description": "Tooltip for status settings button"
+  },
+
+  "noContactsWithStatus": "No {status} contacts",
+  "@noContactsWithStatus": {
+    "description": "Empty state when no contacts match the selected status filter",
+    "placeholders": {
+      "status": {
+        "type": "String",
+        "example": "free"
+      }
+    }
+  },
+
+  "joinCircleToSeeContacts": "Join a circle to see your contacts",
+  "@joinCircleToSeeContacts": {
+    "description": "Empty state subtitle when the user is not in any circle (contacts not visible)"
+  },
+
+  "sendMessage": "Send message",
+  "@sendMessage": {
+    "description": "Action to send a message to a contact"
+  },
+
+  "call": "Call",
+  "@call": {
+    "description": "Action to call a contact"
+  },
+
+  "viewProfile": "View profile",
+  "@viewProfile": {
+    "description": "Action to view a contact's profile"
+  },
+
+  "unknownContact": "Unknown",
+  "@unknownContact": {
+    "description": "Fallback name for a contact with no name"
+  },
+
+  "lastSeenJustNow": "Just now",
+  "@lastSeenJustNow": {
+    "description": "Last seen time when less than a minute ago"
+  },
+
+  "lastSeenMinutesAgo": "{count}m ago",
+  "@lastSeenMinutesAgo": {
+    "description": "Last seen time in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "lastSeenHoursAgo": "{count}h ago",
+  "@lastSeenHoursAgo": {
+    "description": "Last seen time in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+
+  "lastSeenDaysAgo": "{count}d ago",
+  "@lastSeenDaysAgo": {
+    "description": "Last seen time in days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "lastSeenLongTimeAgo": "Long time ago",
+  "@lastSeenLongTimeAgo": {
+    "description": "Last seen time when more than a week ago"
+  },
+
+  "setYourStatus": "Set Your Status",
+  "@setYourStatus": {
+    "description": "Header for the set availability sheet"
+  },
+
+  "statusMessageOptional": "Status message (optional)",
+  "@statusMessageOptional": {
+    "description": "Label for the status message input field"
+  },
+
+  "statusMessageHint": "What are you up to?",
+  "@statusMessageHint": {
+    "description": "Hint text for the status message input field"
+  },
+
+  "duration": "Duration",
+  "@duration": {
+    "description": "Label for the duration selector section"
+  },
+
+  "setAsStatus": "Set as {status}",
+  "@setAsStatus": {
+    "description": "Button label to set the selected status",
+    "placeholders": {
+      "status": {
+        "type": "String",
+        "example": "Free"
+      }
+    }
+  },
+
+  "statusDescriptionFree": "Ready to chat or call",
+  "@statusDescriptionFree": {
+    "description": "Description for the Free status option"
+  },
+
+  "statusDescriptionBusy": "I'm occupied right now",
+  "@statusDescriptionBusy": {
+    "description": "Description for the Busy status option"
+  },
+
+  "statusDescriptionDoNotDisturb": "No notifications please",
+  "@statusDescriptionDoNotDisturb": {
+    "description": "Description for the Do Not Disturb status option"
+  },
+
+  "statusDescriptionSleeping": "Catching some Z's",
+  "@statusDescriptionSleeping": {
+    "description": "Description for the Sleeping status option"
+  },
+
+  "statusDescriptionAway": "Away from my phone",
+  "@statusDescriptionAway": {
+    "description": "Description for the Away status option"
+  },
+
+  "statusDescriptionOffline": "Appear offline",
+  "@statusDescriptionOffline": {
+    "description": "Description for the Offline status option"
+  },
+
+  "statusLabelFree": "Free",
+  "@statusLabelFree": {
+    "description": "Label for Free availability status"
+  },
+
+  "statusLabelBusy": "Busy",
+  "@statusLabelBusy": {
+    "description": "Label for Busy availability status"
+  },
+
+  "statusLabelDoNotDisturb": "Do Not Disturb",
+  "@statusLabelDoNotDisturb": {
+    "description": "Label for Do Not Disturb availability status"
+  },
+
+  "statusLabelSleeping": "Sleeping",
+  "@statusLabelSleeping": {
+    "description": "Label for Sleeping availability status"
+  },
+
+  "statusLabelAway": "Away",
+  "@statusLabelAway": {
+    "description": "Label for Away availability status"
+  },
+
+  "statusLabelOffline": "Offline",
+  "@statusLabelOffline": {
+    "description": "Label for Offline availability status"
+  },
+
+  "statusLabelFreeLowercase": "free",
+  "@statusLabelFreeLowercase": {
+    "description": "Lowercase label for Free status, used in sentences"
+  },
+
+  "statusLabelBusyLowercase": "busy",
+  "@statusLabelBusyLowercase": {
+    "description": "Lowercase label for Busy status, used in sentences"
+  },
+
+  "statusLabelDoNotDisturbLowercase": "do not disturb",
+  "@statusLabelDoNotDisturbLowercase": {
+    "description": "Lowercase label for Do Not Disturb status, used in sentences"
+  },
+
+  "statusLabelSleepingLowercase": "sleeping",
+  "@statusLabelSleepingLowercase": {
+    "description": "Lowercase label for Sleeping status, used in sentences"
+  },
+
+  "statusLabelAwayLowercase": "away",
+  "@statusLabelAwayLowercase": {
+    "description": "Lowercase label for Away status, used in sentences"
+  },
+
+  "statusLabelOfflineLowercase": "offline",
+  "@statusLabelOfflineLowercase": {
+    "description": "Lowercase label for Offline status, used in sentences"
+  },
+
+  "circle": "Circle",
+  "@circle": {
+    "description": "Circle screen title"
+  },
+
+  "circleNotFound": "Circle not found",
+  "@circleNotFound": {
+    "description": "Message shown when circle cannot be found"
+  },
+
+  "freeNow": "Free now",
+  "@freeNow": {
+    "description": "Label for members who are currently free"
+  },
+
+  "members": "Members",
+  "@members": {
+    "description": "Members section header and stat label"
+  },
+
+  "membersCount": "{count, plural, =1{1 member} other{{count} members}}",
+  "@membersCount": {
+    "description": "Member count display with pluralization (e.g., '1 member', '5 members')",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+
+  "invite": "Invite",
+  "@invite": {
+    "description": "Invite button text"
+  },
+
+  "leaveCircle": "Leave Circle",
+  "@leaveCircle": {
+    "description": "Leave circle action text"
+  },
+
+  "inviteToCircle": "Invite to Circle",
+  "@inviteToCircle": {
+    "description": "Invite to circle sheet title"
+  },
+
+  "shareInviteLink": "Share invite link",
+  "@shareInviteLink": {
+    "description": "Share invite link option"
+  },
+
+  "anyoneWithLinkCanJoin": "Anyone with the link can join",
+  "@anyoneWithLinkCanJoin": {
+    "description": "Subtitle for share invite link option"
+  },
+
+  "inviteLinkCopied": "Invite link copied!",
+  "@inviteLinkCopied": {
+    "description": "Snackbar message when invite link is copied"
+  },
+
+  "showQrCode": "Show QR code",
+  "@showQrCode": {
+    "description": "Show QR code option"
+  },
+
+  "scanToJoin": "Scan to join",
+  "@scanToJoin": {
+    "description": "Subtitle for QR code option"
+  },
+
+  "removeFromCircle": "Remove from circle",
+  "@removeFromCircle": {
+    "description": "Remove member from circle action"
+  },
+
+  "leaveCircleQuestion": "Leave Circle?",
+  "@leaveCircleQuestion": {
+    "description": "Leave circle confirmation dialog title"
+  },
+
+  "leaveCircleAdminWarning": "You are an admin. If you leave, you must transfer admin rights first or the circle will be deleted if you are the only admin.",
+  "@leaveCircleAdminWarning": {
+    "description": "Warning message when admin tries to leave circle"
+  },
+
+  "leaveCircleConfirmation": "Are you sure you want to leave \"{circleName}\"?",
+  "@leaveCircleConfirmation": {
+    "description": "Confirmation message when leaving a circle",
+    "placeholders": {
+      "circleName": {
+        "type": "String",
+        "example": "Family"
+      }
+    }
+  },
+
+  "leave": "Leave",
+  "@leave": {
+    "description": "Leave button text"
+  },
+
+  "leftCircle": "Left \"{circleName}\"",
+  "@leftCircle": {
+    "description": "Snackbar message after leaving a circle",
+    "placeholders": {
+      "circleName": {
+        "type": "String",
+        "example": "Family"
+      }
+    }
+  },
+
+  "groupChat": "Group chat",
+  "@groupChat": {
+    "description": "Tooltip for group chat button"
+  },
+
+  "yourAvailability": "Your Availability",
+  "@yourAvailability": {
+    "description": "Section header for user's availability status in profile"
+  },
+
+  "joinCircle": "Join Circle",
+  "@joinCircle": {
+    "description": "Join circle screen title and button text"
+  },
+
+  "invalidInvitationCode": "Invalid invitation code",
+  "@invalidInvitationCode": {
+    "description": "Error message when invitation code is invalid or empty"
+  },
+
+  "unableToJoin": "Unable to Join",
+  "@unableToJoin": {
+    "description": "Error state title when unable to join a circle"
+  },
+
+  "goBack": "Go Back",
+  "@goBack": {
+    "description": "Button text to go back from error state"
+  },
+
+  "invitedBy": "Invited by {inviterName}",
+  "@invitedBy": {
+    "description": "Text showing who sent the circle invitation",
+    "placeholders": {
+      "inviterName": {
+        "type": "String",
+        "example": "John Doe"
+      }
+    }
+  },
+
+  "joinedCircle": "Joined \"{circleName}\"!",
+  "@joinedCircle": {
+    "description": "Snackbar message after successfully joining a circle",
+    "placeholders": {
+      "circleName": {
+        "type": "String",
+        "example": "Family"
+      }
+    }
+  },
+
+  "admin": "Admin",
+  "@admin": {
+    "description": "Label indicating user is an admin of a circle"
+  },
+
+  "freeWithCount": "{count} free",
+  "@freeWithCount": {
+    "description": "Label showing count of members with free availability status",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+
+  "routeErrorTitle": "Something went wrong",
+  "@routeErrorTitle": {
+    "description": "Title shown when navigation fails due to missing or invalid arguments"
+  },
+
+  "routeErrorMissingCircleId": "Circle ID is missing or invalid",
+  "@routeErrorMissingCircleId": {
+    "description": "Error message when circle ID argument is missing"
+  },
+
+  "routeErrorMissingInvitationCode": "Invitation code is missing or invalid",
+  "@routeErrorMissingInvitationCode": {
+    "description": "Error message when invitation code argument is missing"
+  },
+
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Button text to retry a failed operation"
   }
 }

@@ -35,6 +35,16 @@
                     android:host="${auth0Domain}"
                     android:pathPrefix="/android/${auth0Scheme}/callback" />
             </intent-filter>
+            <!-- Kin Deep Link for circle invitations -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="kin"
+                    android:host="join"
+                    android:pathPrefix="/" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

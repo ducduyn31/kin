@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/ducduyn31/kin/compare/v1.3.0...v1.3.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* **auth:** log out issue on iOS ([#19](https://github.com/ducduyn31/kin/issues/19)) ([0ea3bc6](https://github.com/ducduyn31/kin/commit/0ea3bc6e21d54fb6d8fe98e1b176696982c7fd00))
+* **deps:** update dependency flutter_secure_storage to v10 ([#18](https://github.com/ducduyn31/kin/issues/18)) ([31a9431](https://github.com/ducduyn31/kin/commit/31a943117895320c8784c70e4e2fd131c46077e8))
+
 ## [1.3.0](https://github.com/ducduyn31/kin/compare/v1.2.0...v1.3.0) (2025-12-12)
 
 

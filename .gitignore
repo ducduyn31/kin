@@ -66,3 +66,7 @@ app.*.map.json
 # Generated l10n files
 lib/src/l10n/app_localizations.dart
 lib/src/l10n/app_localizations_*.dart
+
+# Nix build outputs
+result
+result-*

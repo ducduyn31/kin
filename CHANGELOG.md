@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/ducduyn31/kin/compare/v1.3.1...v1.4.0) (2025-12-20)
+
+
+### Features
+
+* **main:** update general app design with circles ([#21](https://github.com/ducduyn31/kin/issues/21)) ([d7ec11e](https://github.com/ducduyn31/kin/commit/d7ec11e1a94238656ddb0aa41193c69540614f33))
+* setup connect rpc ([#23](https://github.com/ducduyn31/kin/issues/23)) ([d7f12d8](https://github.com/ducduyn31/kin/commit/d7f12d86d498db44fa0eb1b36465b31a515501ae))
+
 ## [1.3.1](https://github.com/ducduyn31/kin/compare/v1.3.0...v1.3.1) (2025-12-12)
 
 
